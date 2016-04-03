@@ -1,0 +1,9 @@
+*.gradle
+*.properties
+*.bat
+*.iml
+gradlew
+gradle/*
+.idea/*
+*.pro
+app/build/*

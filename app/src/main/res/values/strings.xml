@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">RemoteSPi</string>
+    <string name="c2_button_text"><![CDATA[configure C&C server]]></string>
+    <string name="config_net_text">configure network</string>
+    <string name="exe_cmd_text">Execute command</string>
+    <string name="raspberry_spi_text">Raspberry SPi</string>
+    <string name="wireless_network_text">Wireless Network name:</string>
+    <string name="password_label">Password (if requred):</string>
+    <string name="connect_button">Connect</string>
+    <string name="cmd_control_configure">Configure</string>
+</resources>

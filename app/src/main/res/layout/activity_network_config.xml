@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:background="@color/background_material_dark"
+    tools:context="sminny.remotespi.activities.NetworkConfigActivity">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:id="@+id/networkNameLabel"
+        android:textSize="25sp"
+        android:layout_alignParentTop="true"
+        android:text="@string/wireless_network_text"/>
+    <EditText
+        android:layout_width="fill_parent"
+        android:inputType="text"
+        android:minHeight="30dp"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/white"
+        android:layout_below="@id/networkNameLabel"
+        android:id="@+id/networkNameField"
+        android:textSize="20sp"
+        android:background="#aaaaaa"
+        android:layout_height="wrap_content" />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/white"
+        android:id="@+id/passwordLabel"
+        android:textSize="25sp"
+        android:layout_marginTop="10dp"
+        android:layout_below="@id/networkNameField"
+        android:text="@string/password_label"/>
+    <EditText
+        android:layout_width="fill_parent"
+        android:minHeight="30dp"
+        android:layout_marginTop="10dp"
+        android:textColor="@color/white"
+        android:inputType="textPassword"
+        android:layout_below="@id/passwordLabel"
+        android:id="@+id/networkPasswordField"
+        android:textSize="20sp"
+        android:background="#aaaaaa"
+        android:layout_height="wrap_content" />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"
+        android:layout_below="@id/networkPasswordField"
+        android:text="@string/connect_button"/>
+</RelativeLayout>

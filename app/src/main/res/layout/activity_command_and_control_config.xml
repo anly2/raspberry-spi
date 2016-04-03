@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:background="@color/background_material_dark"
+    tools:context="sminny.remotespi.activities.CommandAndControlConfigActivity">
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/locationLayout">
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@id/portLayout"
+            android:layout_marginRight="20dp"
+            android:id="@+id/addressLayout"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:textColor="#ffffff"
+                android:textSize="25sp"
+                android:text="Server address:"/>
+            <EditText
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:background="#aaaaaa"/>
+
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="75dp"
+            android:layout_alignParentRight="true"
+            android:id="@+id/portLayout"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#ffffff"
+                android:layout_marginBottom="5dp"
+                android:textSize="25sp"
+                android:text="Port:"/>
+            <EditText
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:background="#aaaaaa"/>
+
+        </LinearLayout>
+
+
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:id="@+id/beaconMethodLayout"
+        android:layout_below="@id/locationLayout">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="25sp"
+            android:textColor="@color/white"
+            android:layout_centerVertical="true"
+            android:id="@+id/beaconMethodLabel"
+            android:text="Beacon method:"/>
+
+        <Spinner
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:minHeight="25dp"
+            android:gravity="center"
+            android:layout_marginLeft="15dp"
+            android:layout_centerInParent="true"
+            android:entries="@array/cmd_control_methods"
+            android:background="@color/white"
+            android:layout_toRightOf="@id/beaconMethodLabel"/>
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:id="@+id/intervalLayout"
+        android:layout_below="@id/beaconMethodLayout">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="25sp"
+            android:textColor="@color/white"
+            android:layout_centerVertical="true"
+            android:id="@+id/intervalLabel"
+            android:text="Sending Interval\n(minutes):"/>
+
+        <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:background="#ffffff"
+            android:layout_toRightOf="@id/intervalLabel"
+            android:layout_marginLeft="18dp"
+            android:inputType="numberDecimal"
+            />
+    </RelativeLayout>
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:id="@+id/identifierLayout"
+        android:layout_below="@id/intervalLayout">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="25sp"
+            android:textColor="@color/white"
+            android:layout_centerVertical="true"
+            android:id="@+id/identifierLabel"
+            android:text="Device identifier:"/>
+
+        <EditText
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:textSize="20sp"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:background="#ffffff"
+            android:layout_toRightOf="@id/identifierLabel"
+            android:layout_marginLeft="15dp"
+            android:inputType="text"
+            />
+    </RelativeLayout>
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/identifierLayout"
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:layout_centerInParent="true"
+        android:text="@string/cmd_control_configure"/>
+</RelativeLayout>
