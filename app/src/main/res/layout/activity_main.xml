@@ -20,7 +20,6 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/refreshButton"
             android:textSize="20sp"
             android:layout_gravity="center_vertical"
             android:textColor="#ffffff"
@@ -28,6 +27,7 @@
         <Spinner
             android:layout_width="190dp"
             android:layout_height="wrap_content"
+            android:id="@+id/deviceSpinner"
             android:layout_gravity="center"
             android:entries="@array/paired_devices"
             android:background="#afafaf"
@@ -38,6 +38,7 @@
             android:padding="5dp"
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="10dp"
+            android:id="@+id/refreshButton"
             app:iconSize="30dp"
             app:iconColor="#00ff00"
             app:iconFont="fonts/fontawesome-webfont.ttf"
@@ -79,21 +80,21 @@
         </LinearLayout>
     </RelativeLayout>
 
-    <ImageView
-        android:layout_width="fill_parent"
-        android:id="@+id/spiIcon"
-        android:src="@drawable/spi"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:layout_above="@id/buttonLayout"/>
     <TextView
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:gravity="center"
         android:textSize="30sp"
-        android:layout_above="@id/spiIcon"
         android:id="@+id/appName"
         android:textColor="@android:color/background_light"
         android:text="@string/raspberry_spi_text"/>
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_below="@id/appName"
+        android:layout_above="@id/buttonLayout"
+        android:id="@+id/spiIcon"
+        android:src="@drawable/spi"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"/>
 </RelativeLayout>

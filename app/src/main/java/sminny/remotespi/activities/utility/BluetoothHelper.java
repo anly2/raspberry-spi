@@ -21,6 +21,7 @@ import static android.widget.Toast.makeText;
  */
 public class BluetoothHelper {
     private BluetoothSocket bluetoothSocket;
+    public static String DEVICE_NAME = "";
     public static String DEVICE_ADDRESS = "";
     private BluetoothDevice bluetoothDevice;
 
