@@ -11,5 +11,8 @@
         <item>SSL</item>
         <item>DNS</item>
     </string-array>
+    <string-array name="paired_devices">
+        <item>None</item>
+    </string-array>
 
 </resources>
