@@ -9,4 +9,6 @@
     <string name="connect_button">Connect</string>
     <string name="cmd_control_configure">Configure</string>
     <string name="no_bluetooth_available">This device does not support Bluetooth, terminating process.</string>
+    <string name="connect_bluetooth_device">Please connect to a bluetooth device first</string>
+    <string name="ic_refresh">&#xf021;</string>
 </resources>
