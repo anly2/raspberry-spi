@@ -7,22 +7,7 @@
     android:background="@color/background_material_dark"
     android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity">
 
-    <TextView
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:gravity="center"
-        android:textSize="30sp"
-        android:layout_above="@id/spiIcon"
-        android:textColor="@android:color/background_light"
-        android:text="@string/raspberry_spi_text"/>
-    <ImageView
-        android:layout_width="fill_parent"
-        android:id="@+id/spiIcon"
-        android:src="@drawable/spi"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="10dp"
-        android:layout_above="@id/buttonLayout"/>
+
     <RelativeLayout
         android:layout_width="fill_parent"
         android:id="@+id/buttonLayout"
@@ -53,7 +38,22 @@
                 android:onClick="openC2ConfigServerActivity"
                 android:text="@string/c2_button_text"/>
         </LinearLayout>
-
-
     </RelativeLayout>
+    <ImageView
+        android:layout_width="fill_parent"
+        android:id="@+id/spiIcon"
+        android:src="@drawable/spi"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:layout_above="@id/buttonLayout"/>
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:gravity="center"
+        android:textSize="30sp"
+        android:layout_above="@id/spiIcon"
+        android:id="@+id/appName"
+        android:textColor="@android:color/background_light"
+        android:text="@string/raspberry_spi_text"/>
 </RelativeLayout>

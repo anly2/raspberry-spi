@@ -12,27 +12,6 @@
         android:layout_height="wrap_content"
         android:id="@+id/locationLayout">
         <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_toLeftOf="@id/portLayout"
-            android:layout_marginRight="20dp"
-            android:id="@+id/addressLayout"
-            android:orientation="vertical">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="5dp"
-                android:textColor="#ffffff"
-                android:textSize="25sp"
-                android:text="Server address:"/>
-            <EditText
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:background="#aaaaaa"/>
-
-        </LinearLayout>
-        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:minWidth="75dp"
@@ -53,6 +32,28 @@
                 android:background="#aaaaaa"/>
 
         </LinearLayout>
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@id/portLayout"
+            android:layout_marginRight="20dp"
+            android:id="@+id/addressLayout"
+            android:orientation="vertical">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="5dp"
+                android:textColor="#ffffff"
+                android:textSize="25sp"
+                android:text="Server address:"/>
+            <EditText
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:textSize="20sp"
+                android:background="#aaaaaa"/>
+
+        </LinearLayout>
+
 
 
     </RelativeLayout>
