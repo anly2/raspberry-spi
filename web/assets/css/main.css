@@ -24,7 +24,7 @@ body {
 }
 
 
-.header aa,.action-bar {
+.action-bar {
 	background-color: rgba(200,200,200, 0.5);
 }
 
@@ -75,13 +75,15 @@ body {
 .device-list .device {
 	padding: 0.5em 1em;
 	border-radius: 0.75em;
-	background-color: rgba(51, 122, 183, 0.2);
 }
 
-.device-list .device:hover{
-	background-color: rgba(51, 122, 183, 0.5);
-	/*cursor: pointer;*/
+.device-list.colored .device {
+	background-color: rgba(51, 122, 183, 0.2);
 }
+.device-list.colored .device:hover {
+	background-color: rgba(51, 122, 183, 0.5);
+}
+
 
 .device-list .device .device-info {
 	/*clearfix*/
