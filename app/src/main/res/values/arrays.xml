@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="command_array">
+        <item>aircrack-ng</item>
+        <item>nmap</item>
+        <item>ping</item>
+        <item>Download pcap file</item>
+    </string-array>
+    <string-array name="cmd_control_methods">
+        <item>HTTP</item>
+        <item>SSL</item>
+        <item>DNS</item>
+    </string-array>
+    <string-array name="paired_devices">
+        <item>None</item>
+    </string-array>
+
+</resources>
