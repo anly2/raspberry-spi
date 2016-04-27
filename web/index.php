@@ -26,6 +26,11 @@ function map($uri, $page) {
 }
 
 
+REST::handle("/device/(\d+)/report", function($r) {
+	require("pages/report.php");
+}, "POST");
+
+map("/form", "form.php");
 map("/devices", "devices.php");
 map("/device/not-found", "device not found.php");
 map("/device/(\d+)", "device.php");
