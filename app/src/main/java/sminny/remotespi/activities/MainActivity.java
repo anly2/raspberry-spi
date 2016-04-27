@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
                 }
                 if(!found)
                     Toast.makeText(self, "Connection to paired device has been lost" +
-                            ", please click refresh", LENGTH_LONG);
+                            ", please click refresh", LENGTH_LONG).show();
             }
 
             @Override
@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity {
             for(BluetoothDevice device : deviceSet)
                 arrayAdapter.add(device.getName());
         }
-        BluetoothHelper.DEVICE_ADDRESS = arrayAdapter.getItem(0);
+        BluetoothHelper.DEVICE_NAME = arrayAdapter.getItem(0);
         arrayAdapter.notifyDataSetChanged();
     }
     private void initBluetooth(){
