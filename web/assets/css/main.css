@@ -24,17 +24,22 @@ body {
 }
 
 
-.header .action-bar {
+.header aa,.action-bar {
 	background-color: rgba(200,200,200, 0.5);
+}
+
+.action-bar {
 	padding: 0.25em 0.5em;
+	margin: 0.5em 0em 1.5em;
 
 	/* clearfix */
 	width:auto;
 	overflow: auto;
 }
-.header .action-bar .breadcrumbs {
+.action-bar .breadcrumbs {
 	float: left;
 }
+
 .header .action-bar .user-menu {
 	float: right;
 }
@@ -75,7 +80,7 @@ body {
 
 .device-list .device:hover{
 	background-color: rgba(51, 122, 183, 0.5);
-	cursor: pointer;
+	/*cursor: pointer;*/
 }
 
 .device-list .device .device-info {
@@ -97,12 +102,35 @@ body {
 	margin-left: 2em;
 }
 
+/*.device-list*/
 .device-name {
 	margin-bottom: 0.25em;
 }
+
+
+.info-list {
+	padding: 0;
+	margin: 0px;
+}
+.info-list > * > :first-child {
+	display: inline-block;
+	min-width: 5.5em;
+}
+.info-list.right-aligned-labels > * > :first-child {
+	margin-right: 0.5em;
+	text-align: right;
+}
+
+
+
+
 .title {
 	font-size: 1.2em;
 	font-weight: bold;
+}
+
+ul.unstyled {
+	list-style: none;
 }
 
 
