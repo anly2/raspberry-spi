@@ -11,7 +11,7 @@ else
 	$device = $device[0];
 
 $id = $device["ID"];
-$reports = fetch("SELECT * FROM reports"
+$reports = fetch("SELECT RID as id, Timestamp FROM reports"
 	." WHERE DID=:id"
 	." ORDER BY Timestamp DESC",
 	array(":id" => $device["ID"]));
@@ -23,7 +23,7 @@ $reports = fetch("SELECT * FROM reports"
 <div class="main">
 	<div id="device-<?php echo $id; ?>" class="container">
 		<div class="device-name title">
-			<a href="<?php echo HOME.'device/'.$device['ID']; ?>"><?php echo $device["Name"]; ?></a>
+			<a href="<?php echo HOME.'/device/'.$device['ID']; ?>"><?php echo $device["Name"]; ?></a>
 		</div>
 		
 		<ul class="unstyled info-list">
@@ -46,42 +46,34 @@ $reports = fetch("SELECT * FROM reports"
 				<span class="data-label">Reports:</span>
 				<span class="data-value"><b><?php echo count($reports);?></b> total</span>
 			</li>
+
+			<li class="device-report">
+				<span class="data-label">Display report:</span>
+				<span class="data-value">
+					<select id="report_selection" autocomplete="off"
+						onchange="show_report(this.value);">
+						<option value="-1">None</option>
+
+						<?php foreach($reports as $report): ?>
+						<option value="<?php echo $report["id"] ?>">Report <?php echo $report["id"] ?></option>
+						<?php endforeach; ?>
+					</select>
+
+					<div class="report" id="shown_report">
+						<div>Report date: <span class="report-date" id="shown_report_date"></span></div>
+						<pre class="report-content" id="shown_report_content"></pre>
+					</div>
+				</span>
+				<script type="text/javascript">setTimeout('show_report(document.getElementById("report_selection").value)', 10);</script>
+			</li>
 		</dl>
 	</div>
 </div>
 
+
+<script type="text/javascript" src="<?php echo ASSETS_FOLDER.'/js/dates.js'; ?>"></script>
 <script type="text/javascript">
 (function() {
-	var articulate = function(t, m) {
-		return t + " " + m + (t==1? "" : "s");
-	}
-	var inWords = function(date) {
-		var s = "";
-		var t = 0;
-
-		t = Math.floor(date.getHours() / 24);
-		if (t > 0)
-			s += articulate(t, "day") + " ";
-
-		t = date.getHours() % 24;
-		if (t > 0)
-			s += articulate(t, "hour") + " ";
-
-		t = date.getMinutes();
-		if (t > 0)
-			s += articulate(t, "minute") + " ";
-
-		t = date.getSeconds();
-		if (t > 0)
-			s += articulate(t, "second") + " ";
-
-		return s.trim();
-	}
-	var asDate = function(value) {
-		var t = "2010-06-09 13:12:01".split(/[- :]/);
-		return new Date(t[0], t[1]-1, t[2], t[3], t[4], t[5]);
-	}
-
 	var lastheard = document.querySelectorAll(".device-lastheard > .data-value");
 	var now = new Date();
 	for (var i = lastheard.length - 1; i >= 0; i--) {
@@ -92,8 +84,41 @@ $reports = fetch("SELECT * FROM reports"
 			continue;
 
 		e.setAttribute('timestamp', v);
-		var d = asDate(v);
-		e.innerHTML = inWords(new Date(now - d)) + " ago";
+		var d = Date.from_mysql(v);
+		e.innerHTML = new Date(now - d).inWords() + " ago";
+	}
+}())
+</script>
+
+
+<script type="text/javascript" src="<?php echo ASSETS_FOLDER.'/js/call.js'; ?>"></script>
+<script type="text/javascript">
+(function() {
+	var report = document.getElementById("shown_report");
+	var report_date = document.getElementById("shown_report_date");
+	var report_content = document.getElementById("shown_report_content");
+
+	var update = function() {
+		if (report_content.innerHTML.trim() != "")
+			report.style.display = "block";
+		else
+			report.style.display = "none";
+	};
+
+	window.show_report = function(id) {
+		call("<?php echo HOME.'/report/'; ?>" + id + "/date",
+			function(content){
+				var date = Date.from_mysql(content);
+				report_date.innerHTML = date.toLocaleString() + " &nbsp; (" + date.inWords() + " ago)";
+				update();
+			}
+		);
+		call("<?php echo HOME.'/report/'; ?>" + id + "/content",
+			function(content){
+				report_content.innerHTML = content;
+				update();
+			}
+		);
 	}
 }())
 </script>

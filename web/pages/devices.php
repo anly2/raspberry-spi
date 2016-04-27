@@ -10,7 +10,7 @@ $devices = fetch("SELECT * FROM devices");
 		<ul class="device-list">
 			<?php
 			foreach($devices as $device):
-				$reports = fetch("SELECT * FROM reports"
+				$reports = fetch("SELECT Timestamp FROM reports"
 					." WHERE DID=:id"
 					." ORDER BY Timestamp DESC",
 					array(":id" => $device["ID"]));

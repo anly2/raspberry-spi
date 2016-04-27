@@ -114,11 +114,26 @@ body {
 }
 .info-list > * > :first-child {
 	display: inline-block;
-	min-width: 5.5em;
+	min-width: 5em;
+	margin-right: 0.5em;
 }
 .info-list.right-aligned-labels > * > :first-child {
-	margin-right: 0.5em;
 	text-align: right;
+}
+
+.info-list .device-report {
+	margin-top: 0.75em;
+}
+.info-list .device-report select {
+	margin: 0.25em 0em;
+}
+
+
+.info-list .device-report .report .report-date {
+	margin-left: 0.75em;
+}
+.info-list .device-report .report .report-content {
+	margin-top: 0.5em;
 }
 
 

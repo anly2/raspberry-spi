@@ -19,17 +19,19 @@ function redirect($url) {
 	echo '<script type="text/javascript">window.location.href="'.$url.'";</script>';
 }
 
+function map($uri, $page) {
+	REST::handle($uri, function($r) use($page) {
+		page($page);
+	});	
+}
 
-REST::handle("/devices", function($r) {
-	page("devices.php");
+
+map("/devices", "devices.php");
+map("/device/not-found", "device not found.php");
+map("/device/(\d+)", "device.php");
+
+REST::handle("/report/(\d+)/%", function($r) {
+	require("pages/report.php");
 });
-
-REST::handle("/device/not-found", function($r) {
-	page("device not found.php");
-});
-
-REST::handle("/device/(\d+)", function($r) {
-	page("device.php");
-});
-
+map("/report/(\d+)", "report.php");
 ?>
