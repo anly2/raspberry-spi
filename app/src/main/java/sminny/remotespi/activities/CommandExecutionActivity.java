@@ -5,7 +5,7 @@ import android.os.Bundle;
 
 import sminny.remotespi.R;
 
-public class CommandExecutionActivity extends Activity {
+public class CommandExecutionActivity extends SpiActivity{
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
