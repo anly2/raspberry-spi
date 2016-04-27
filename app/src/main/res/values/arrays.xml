@@ -8,7 +8,7 @@
     </string-array>
     <string-array name="cmd_control_methods">
         <item>HTTP</item>
-        <item>SSL</item>
+        <item>HTTPS</item>
         <item>DNS</item>
     </string-array>
     <string-array name="paired_devices">

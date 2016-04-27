@@ -13,6 +13,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.UUID;
 
+import sminny.remotespi.activities.SpiActivity;
+
 
 /**
  * Created by sminny on 4/26/16.
@@ -25,10 +27,11 @@ public class BluetoothHelper {
     private InputStream iStream;
     private OutputStream oStream;
     private UUID uuid;
-    private Context c;
+    private SpiActivity activity;
+    private boolean isCommunicating = false;
 
-    public BluetoothHelper(Context c){
-        this.c = c;
+    public BluetoothHelper(SpiActivity activity){
+        this.activity = activity;
         uuid = UUID.fromString("94f39d29-7d6d-437d-973b-fba39e49d4ee");
         init();
     }
@@ -51,7 +54,9 @@ public class BluetoothHelper {
         }
     }
 
-    public void write(String s){
+    public synchronized void write(String s) throws IOException {
+        if(isCommunicating)
+            throw new IOException("Bluetooth module is currently communicating, try again later");
         BluetoothConnectionTask task = new BluetoothConnectionTask();
         task.execute(s);
     }
@@ -60,15 +65,18 @@ public class BluetoothHelper {
         return iStream.read();
     }
 
+
     private class BluetoothConnectionTask extends AsyncTask<String,Void, String>{
 
         @Override
         public void  onPostExecute(String result){
             if(result == null)
-                Toast.makeText(c, "Device Bluetooth connection not found," +
+                Toast.makeText(activity, "Device Bluetooth connection not found," +
                         " please check it and try again later", Toast.LENGTH_LONG).show();
             else
-                Toast.makeText(c, "Successfully sent command to device", Toast.LENGTH_LONG).show();
+                Toast.makeText(activity, "Successfully sent command to device", Toast.LENGTH_LONG).show();
+            isCommunicating = false;
+            activity.hideProgressDialog();
         }
 
         @Override
@@ -80,7 +88,14 @@ public class BluetoothHelper {
                     for(String s : params){
                         oStream.write(s.getBytes());
                         oStream.flush();
+//                        while((char)iStream.read() == '0') {
+//                            Thread.sleep(100);
+//                            oStream.write(s.getBytes());
+//                            oStream.flush();
+//                        }
                     }
+                    oStream.close();
+                    iStream.close();
                     bluetoothSocket.close();
                     return "success";
                 }

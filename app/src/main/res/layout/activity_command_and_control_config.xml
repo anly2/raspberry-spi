@@ -29,6 +29,8 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:textSize="20sp"
+                android:inputType="number"
+                android:id="@+id/portField"
                 android:background="#aaaaaa"/>
 
         </LinearLayout>
@@ -49,6 +51,8 @@
             <EditText
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:id="@+id/addressField"
+                android:inputType="text"
                 android:textSize="20sp"
                 android:background="#aaaaaa"/>
 
@@ -79,43 +83,44 @@
             android:gravity="center"
             android:layout_marginLeft="15dp"
             android:layout_centerInParent="true"
+            android:id="@+id/beaconMethodSpinner"
             android:entries="@array/cmd_control_methods"
             android:background="@color/white"
             android:layout_toRightOf="@id/beaconMethodLabel"/>
     </RelativeLayout>
-    <RelativeLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="15dp"
-        android:id="@+id/intervalLayout"
-        android:layout_below="@id/beaconMethodLayout">
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="25sp"
-            android:textColor="@color/white"
-            android:layout_centerVertical="true"
-            android:id="@+id/intervalLabel"
-            android:text="Sending Interval\n(minutes):"/>
+    <!--<RelativeLayout-->
+        <!--android:layout_width="fill_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:layout_marginTop="15dp"-->
+        <!--android:id="@+id/intervalLayout"-->
+        <!--android:layout_below="@id/beaconMethodLayout">-->
+        <!--<TextView-->
+            <!--android:layout_width="wrap_content"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:textSize="25sp"-->
+            <!--android:textColor="@color/white"-->
+            <!--android:layout_centerVertical="true"-->
+            <!--android:id="@+id/intervalLabel"-->
+            <!--android:text="Sending Interval\n(minutes):"/>-->
 
-        <EditText
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:textSize="20sp"
-            android:layout_centerInParent="true"
-            android:gravity="center"
-            android:background="#ffffff"
-            android:layout_toRightOf="@id/intervalLabel"
-            android:layout_marginLeft="18dp"
-            android:inputType="numberDecimal"
-            />
-    </RelativeLayout>
+        <!--<EditText-->
+            <!--android:layout_width="fill_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:textSize="20sp"-->
+            <!--android:layout_centerInParent="true"-->
+            <!--android:gravity="center"-->
+            <!--android:background="#ffffff"-->
+            <!--android:layout_toRightOf="@id/intervalLabel"-->
+            <!--android:layout_marginLeft="18dp"-->
+            <!--android:inputType="numberDecimal"-->
+            <!--/>-->
+    <!--</RelativeLayout>-->
     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="15dp"
         android:id="@+id/identifierLayout"
-        android:layout_below="@id/intervalLayout">
+        android:layout_below="@id/beaconMethodLayout">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -129,8 +134,8 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:textSize="20sp"
+            android:id="@+id/identifierField"
             android:layout_centerInParent="true"
-            android:gravity="center"
             android:background="#ffffff"
             android:layout_toRightOf="@id/identifierLabel"
             android:layout_marginLeft="15dp"
@@ -144,5 +149,6 @@
         android:layout_marginTop="10dp"
         android:gravity="center"
         android:layout_centerInParent="true"
+        android:onClick="executeC2Configuration"
         android:text="@string/cmd_control_configure"/>
 </RelativeLayout>

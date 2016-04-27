@@ -1,6 +1,5 @@
 package sminny.remotespi.activities;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.View;
@@ -17,7 +16,7 @@ import java.io.IOException;
 import sminny.remotespi.R;
 import sminny.remotespi.activities.utility.BluetoothHelper;
 
-public class NetworkConfigActivity extends Activity {
+public class NetworkConfigActivity extends SpiActivity {
     private BluetoothHelper bh;
 
     @Override
@@ -37,15 +36,14 @@ public class NetworkConfigActivity extends Activity {
             imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
 
-        JSONObject json = new JSONObject();
         try {
-            JSONArray array = new JSONArray();
-            array.put(essid);
-            array.put(passwd);
-            json.accumulate("action", "config_network");
-            json.accumulate("args", array);
-            bh.write(json.toString());
+            String json = constructBTRequestBody("config_network", essid, passwd);
+            showProgressDialog();
+            bh.write(json);
         } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
             e.printStackTrace();
         }
     }
