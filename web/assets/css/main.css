@@ -1,0 +1,167 @@
+body {
+	font-size: 16px;
+	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif,"Times New Roman";
+
+	margin: 0px;
+	padding: 0px;
+}
+
+
+.header {
+	margin-bottom: 1em;
+}
+
+.logo {
+	margin-top: 0px;
+}
+.header .logo .logo-text {
+	font-size: 4em;
+}
+.logo-text {
+	font-size: 1.5em;
+	font-family: "Script", "Palatino Linotype";
+	font-style: italic;
+}
+
+
+.header .action-bar {
+	background-color: rgba(200,200,200, 0.5);
+	padding: 0.25em 0.5em;
+
+	/* clearfix */
+	width:auto;
+	overflow: auto;
+}
+.header .action-bar .breadcrumbs {
+	float: left;
+}
+.header .action-bar .user-menu {
+	float: right;
+}
+
+.header .action-bar .user-menu .username {
+	margin: 0px 1em;
+	font-weight: bold;
+	font-style: italic;
+}
+.header .action-bar .user-menu .username:hover {
+	text-decoration: none;
+	color: #337ab7;
+	cursor: pointer;
+}
+.header .action-bar .user-menu .username::before { content: '('; }
+.header .action-bar .user-menu .username::after { content: ')'; }
+
+
+.main {
+	margin-bottom: 1em;
+}
+.main .title:first-of-type { margin-top: 0.5em; }
+
+.device-list {
+	list-style: none;
+	padding: 0px;
+	margin: 0px 1em;
+}
+.device-list li {
+	margin: 0.5em 0px 1em;
+}
+
+.device-list .device {
+	padding: 0.5em 1em;
+	border-radius: 0.75em;
+	background-color: rgba(51, 122, 183, 0.2);
+}
+
+.device-list .device:hover{
+	background-color: rgba(51, 122, 183, 0.5);
+	cursor: pointer;
+}
+
+.device-list .device .device-info {
+	/*clearfix*/
+	width: auto;
+	overflow: auto;
+}
+
+.device-list .device .device-info .data-label {
+	font-weight: bold;
+}
+.device-list .device .device-info .data-label:after {
+	content: ":";
+	margin-right: 0.25em;
+}
+
+.device-list .device .device-info > *[class^="device-"]:not(.device-name) {
+	float: left;
+	margin-left: 2em;
+}
+
+.device-name {
+	margin-bottom: 0.25em;
+}
+.title {
+	font-size: 1.2em;
+	font-weight: bold;
+}
+
+
+.footer {
+	font-size: 0.9em;
+	background-color: gray;
+	box-shadow: 0px 1em 1em -1em black inset;
+	padding: 0.75em 0.5em 0.25em;
+	color: #202020;
+}
+.footer {
+	position: absolute;
+	bottom: 0px;
+	left:0px;
+	right: 0px;
+}
+
+a.main {
+	margin-bottom: 8em;
+}
+a.main+.footer {
+	position: fixed;
+	bottom: 0px;
+	left:0px;
+	right: 0px;
+}
+
+.footer a {
+	color: #101010;
+}
+
+.footer nav,
+.footer .nav {
+	font-size: 0.9em;
+}
+
+ul.horizontal {
+	list-style: none;
+	padding: 0px;
+}
+ul.horizontal li {
+	display: inline-block;
+}
+
+.footer .nav ul.horizontal li:not(:first-child):before,
+.footer  nav ul.horizontal li:not(:first-child):before {
+	content: '-';
+	margin-left: 0.25em;
+	margin-right: 0.5em;
+}
+
+
+.footer .copyright {
+	font-size: 0.8em;
+}
+
+.footer ul.authors,
+.footer ul .authors,
+.footer .authors ul {
+	list-style: none;
+	padding: 0px;
+}
