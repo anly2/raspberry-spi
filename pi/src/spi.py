@@ -87,6 +87,12 @@ def save_settings():
 	with open(SETTINGS_FILE, 'w') as f:
 	    json.dump(settings, f);
 
+
+def add_report(content):
+	with open(REPORTS_FOLDER + "report-" + str(int(time.time())) + ".txt") as f:
+		f.write(content);
+		f.close();
+
 def get_report():
 	global last_report;
 
