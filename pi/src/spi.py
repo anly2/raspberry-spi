@@ -35,6 +35,8 @@ def request(url, data=None, method="GET"):
 
 
 def get_device_id():
+	global device_id;
+
 	while device_id is None:
 		result = int(register());
 
@@ -43,14 +45,16 @@ def get_device_id():
 		else:
 			device_id = result;
 			save_settings();
-			break;
+			return device_id;
 
 def register():
-	return requests.post("http://"+SERVER_ADDRESS+"/device/register", data=device_name);
+	return request("http://"+SERVER_ADDRESS+"/device/register", data=device_name, method="POST");
 
-def send_report():
-	report = get_report();
-	return requests.post("http://"+SERVER_ADDRESS+"/device/"+device_id+"/report", data=report);
+def send_report(report=None):
+	if report is None:
+		report = get_report();
+
+	return request("http://"+SERVER_ADDRESS+"/device/"+str(device_id)+"/report", data=report, method="POST");
 
 def receive_commands():
 	skip();
