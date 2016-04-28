@@ -10,11 +10,13 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 
 import sminny.remotespi.R;
+import sminny.remotespi.activities.utility.BluetoothHelper;
 
 public class CommandExecutionActivity extends SpiActivity{
     private Context self;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        bh = new BluetoothHelper(this);
         super.onCreate(savedInstanceState);
         self = this;
         setContentView(R.layout.activity_command_execution);
@@ -39,6 +41,7 @@ public class CommandExecutionActivity extends SpiActivity{
                         startActivity(ping);
                         break;
                     case "Download pcap file":
+                        Log.d("FETCHING: ", "fetching");
                         bh.fetchFile();
                         break;
 

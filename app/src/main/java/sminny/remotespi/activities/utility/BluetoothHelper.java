@@ -1,10 +1,16 @@
 package sminny.remotespi.activities.utility;
 
+import android.Manifest;
+import android.app.DownloadManager;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Context;
+import android.content.pm.PackageManager;
+import android.media.MediaScannerConnection;
 import android.os.AsyncTask;
+import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -32,6 +38,12 @@ public class BluetoothHelper {
     private UUID uuid;
     private SpiActivity activity;
     private boolean isCommunicating = false;
+
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
+    };
 
     public BluetoothHelper(SpiActivity activity){
         this.activity = activity;
@@ -82,33 +94,29 @@ public class BluetoothHelper {
                 return;
             }
             else {
-                Toast.makeText(activity, "Successfully sent command to device", Toast.LENGTH_LONG).show();
+                Toast.makeText(activity, "Successfully saved file", Toast.LENGTH_LONG).show();
             }
-            String s = "";
-            for(int i = 0; i<32;i++){
-                s += result[i];
-            }
-            System.out.println("HEADER IS: " + s);
+            saveFile(result);
             activity.hideProgressDialog();
         }
 
         @Override
         protected byte[] doInBackground(String... params) {
+            String s = "";
             try {
                 updateSocketAndStreams();
                 bluetoothSocket.connect();
                 if(bluetoothSocket.isConnected()) {
-                    for(String s : params){
-                        oStream.write(s.getBytes());
+                    for(String str : params){
+                        oStream.write(str.getBytes());
                         oStream.flush();
                     }
                     byte nul = 0x00;
                     oStream.write(nul);
                     oStream.flush();
-                    String s = "";
-                    byte[] buf = new byte[1024];
-                    while(iStream.read(buf) != -1)
-                        s += buf;
+                    int b;
+                    while((b = iStream.read()) != -1)
+                        s += (char)b;
 
                     oStream.close();
                     iStream.close();
@@ -117,19 +125,43 @@ public class BluetoothHelper {
                 }
             } catch (IOException e) {
                 e.printStackTrace();
+                return s.getBytes();
             }
 
             return null;
         }
 
         private void saveFile(byte[] arr){
-            File f = new File("whatever");
+
+//            int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
+//
+//            if (permission != PackageManager.PERMISSION_GRANTED) {
+//
+//                // We don't have permission so prompt the user
+//                ActivityCompat.requestPermissions(
+//                        activity,
+//                        PERMISSIONS_STORAGE,
+//                        REQUEST_EXTERNAL_STORAGE
+//                );
+//            }
+            File f = new File(Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_DOWNLOADS),"RSpi");
+            if (!f.mkdirs()) {
+                Log.e("ERR", "Directory not created");
+            }
             try {
-                FileOutputStream fw =  new FileOutputStream(f);
+//                f.setReadable(true, false);
+                File tmp = new File(f, "dump"+System.currentTimeMillis());
+                FileOutputStream fw =  new FileOutputStream(tmp);
                 fw.write(arr);
+                fw.flush();
+                fw.close();
+
+                MediaScannerConnection.scanFile(activity, new String[]{ f.toString()}, null, null);
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            Toast.makeText(activity, f.getAbsolutePath(), Toast.LENGTH_LONG).show();
         }
     }
     private class BluetoothConnectionTask extends AsyncTask<String,Void, String>{
@@ -155,10 +187,6 @@ public class BluetoothHelper {
                         oStream.write(s.getBytes());
                         oStream.flush();
                     }
-//                    byte nul = 0x00;
-//                    oStream.write(nul);
-//                    oStream.flush();
-
                     oStream.close();
                     iStream.close();
                     bluetoothSocket.close();
