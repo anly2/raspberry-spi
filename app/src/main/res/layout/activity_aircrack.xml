@@ -60,15 +60,27 @@
                 android:textSize="20sp"
                 android:background="#aaaaaa"/>
         </RelativeLayout>
-        <Button
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/identifierLayout"
-            android:layout_marginTop="10dp"
             android:gravity="center"
-            android:layout_centerInParent="true"
-            android:onClick="executeAirodumpCommand"
-            android:text="@string/airdump_cmd"/>
+            android:layout_below="@id/identifierLayout">
+            <Button
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:onClick="executeAirodumpCommand"
+                android:text="@string/airdump_cmd"/>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:gravity="center"
+                android:onClick="stopAirodumpCommand"
+                android:text="@string/airdump_cmd"/>
+        </LinearLayout>
 
 
 </RelativeLayout>
