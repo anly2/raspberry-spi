@@ -159,10 +159,13 @@ ul.unstyled {
 	color: #202020;
 }
 .footer {
-	position: absolute;
+	position: fixed;
 	bottom: 0px;
 	left:0px;
 	right: 0px;
+}
+body {
+	margin-bottom: 8em;
 }
 
 a.main {

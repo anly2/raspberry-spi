@@ -23,4 +23,8 @@ public class AircrackActivity extends SpiActivity {
         sendMessageViaBT("airodump", channels, bssid);
 
     }
+
+    public void stopAirodumpCommand(View view) {
+        sendMessageViaBT("stop_airodump");
+    }
 }

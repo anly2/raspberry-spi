@@ -91,6 +91,9 @@ $reports = fetch("SELECT RID as id, Timestamp FROM reports"
 						<?php endforeach; ?>
 					</select>
 
+					<button onclick="--document.getElementById('report_selection').selectedIndex; update_report();">&uarr;</button>
+					<button onclick="++document.getElementById('report_selection').selectedIndex; update_report();">&darr;</button>
+
 					<div class="report" id="shown_report">
 						<div>Report date: <span class="report-date" id="shown_report_date"></span></div>
 						<pre class="report-content" id="shown_report_content"></pre>
@@ -142,13 +145,17 @@ $reports = fetch("SELECT RID as id, Timestamp FROM reports"
 		call("<?php echo HOME.'/report/'; ?>" + id + "/date",
 			function(content){
 				var date = Date.from_mysql(content);
-				report_date.innerHTML = date.toLocaleString() + " &nbsp; (" + date.inWords() + " ago)";
+				report_date.innerHTML = date.toLocaleString() + " &nbsp; (" + new Date(new Date() - date).inWords() + " ago)";
 			}
 		);
 		call("<?php echo HOME.'/report/'; ?>" + id + "/content", function(content){
 			report_content.innerHTML = content;
 		});
 	}
-	show_report(document.getElementById("report_selection").value);
+
+	window.update_report = function() {
+		show_report(document.getElementById("report_selection").value);
+	};
+	window.update_report();
 }())
 </script>
