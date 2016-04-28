@@ -1,18 +1,22 @@
 from time import sleep;
 from thread import start_new_thread;
 from Queue import Queue;
+import os;
 import urllib2;
 
 SERVER_ADDRESS = "192.168.0.7/Sticky%20Pi/web";
+REPORTS_FOLDER = "reports/";
 
 REPORT_SEND_INTERVAL = 10 * 60;
 COMMAND_QUERY_INTERVAL = 1 * 60;
 
 device_id = None;
 device_name = "Unnamed Spi";
+last_report = None;
 commands_queue = Queue();
 
-def main():
+def __main__():
+	load_settings();
 	start_new_thread( loop_bt, ());
 	start_new_thread( loop_reporter, ());
 	start_new_thread( loop_executer, ());
@@ -29,7 +33,7 @@ def request(url, data=None, method="GET"):
 
 def get_device_id():
 	while device_id is None:
-		result = register();
+		result = int(register());
 
 		if result < 0:
 			sleep(COMMAND_QUERY_INTERVAL);
@@ -56,8 +60,37 @@ def dispatch(cmd):
 def save_settings():
 	print("saving");
 
+def load_settings():
+	skip();
+
 def get_report():
-	return "Some report that should be from a file";
+	global last_report;
+
+	reports = os.listdir(REPORTS_FOLDER);
+	reports.sort(key=lambda x: os.path.getmtime(REPORTS_FOLDER+"/"+x), reverse=True);
+
+	if not reports:
+		return None;
+
+	if last_report is None:
+		last_report = reports[-1];
+
+	filename = reports[0];
+	try:
+		i = reports.index(last_report);
+
+		if i == 0:
+			return None;
+
+		filename = reports[i-1];
+	except:
+		pass;
+
+	content = open(REPORTS_FOLDER + "/" + filename, 'r').read();
+	last_report = filename;
+
+	return content;
+	#return "Some report that should be from a file";
 
 
 
