@@ -60,6 +60,7 @@ def send_report(report=None):
 
 def receive_commands():
 	skip();
+	return [];
 	#not implemented yet
 
 
