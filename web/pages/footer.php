@@ -18,16 +18,5 @@
 	</div>
 </div>
 
-<script type="text/javascript">
-(function(){
-	var footer = document.querySelector(".footer");
-	var contentHeight = document.body.clientHeight
-	var footerTop = footer.offsetTop;
-
-	if (contentHeight > footerTop)
-		footer.style.position = "static";
-})();
-</script>
-
 </body>
 </html>
