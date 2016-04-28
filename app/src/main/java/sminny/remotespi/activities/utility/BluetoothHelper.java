@@ -8,6 +8,9 @@ import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -53,7 +56,10 @@ public class BluetoothHelper {
             e.printStackTrace();
         }
     }
-
+    public synchronized void fetchFile(){
+        BluetoothDownloadFileTask bdft = new BluetoothDownloadFileTask();
+        bdft.execute();
+    }
     public synchronized void write(String s) throws IOException {
         if(isCommunicating)
             throw new IOException("Bluetooth module is currently communicating, try again later");
@@ -65,7 +71,67 @@ public class BluetoothHelper {
         return iStream.read();
     }
 
+    private class BluetoothDownloadFileTask extends AsyncTask<String, Void, byte[]>{
+        @Override
+        protected void onPostExecute(byte[] result){
 
+            isCommunicating = false;
+            if(result == null) {
+                Toast.makeText(activity, "Device Bluetooth connection not found," +
+                        " please check it and try again later", Toast.LENGTH_LONG).show();
+                return;
+            }
+            else {
+                Toast.makeText(activity, "Successfully sent command to device", Toast.LENGTH_LONG).show();
+            }
+            String s = "";
+            for(int i = 0; i<32;i++){
+                s += result[i];
+            }
+            System.out.println("HEADER IS: " + s);
+            activity.hideProgressDialog();
+        }
+
+        @Override
+        protected byte[] doInBackground(String... params) {
+            try {
+                updateSocketAndStreams();
+                bluetoothSocket.connect();
+                if(bluetoothSocket.isConnected()) {
+                    for(String s : params){
+                        oStream.write(s.getBytes());
+                        oStream.flush();
+                    }
+                    byte nul = 0x00;
+                    oStream.write(nul);
+                    oStream.flush();
+                    String s = "";
+                    byte[] buf = new byte[1024];
+                    while(iStream.read(buf) != -1)
+                        s += buf;
+
+                    oStream.close();
+                    iStream.close();
+                    bluetoothSocket.close();
+                    return s.getBytes();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        private void saveFile(byte[] arr){
+            File f = new File("whatever");
+            try {
+                FileOutputStream fw =  new FileOutputStream(f);
+                fw.write(arr);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
     private class BluetoothConnectionTask extends AsyncTask<String,Void, String>{
 
         @Override
@@ -88,12 +154,11 @@ public class BluetoothHelper {
                     for(String s : params){
                         oStream.write(s.getBytes());
                         oStream.flush();
-//                        while((char)iStream.read() == '0') {
-//                            Thread.sleep(100);
-//                            oStream.write(s.getBytes());
-//                            oStream.flush();
-//                        }
                     }
+//                    byte nul = 0x00;
+//                    oStream.write(nul);
+//                    oStream.flush();
+
                     oStream.close();
                     iStream.close();
                     bluetoothSocket.close();
