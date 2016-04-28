@@ -3,9 +3,11 @@ from thread import start_new_thread;
 from Queue import Queue;
 import os;
 import urllib2;
+import json;
 
 SERVER_ADDRESS = "192.168.0.7/Sticky%20Pi/web";
 REPORTS_FOLDER = "reports/";
+SETTINGS_FILE = "settings.json";
 
 REPORT_SEND_INTERVAL = 10 * 60;
 COMMAND_QUERY_INTERVAL = 1 * 60;
@@ -57,11 +59,29 @@ def dispatch(cmd):
 	print("Dispatching command...");
 
 
-def save_settings():
-	print("saving");
-
 def load_settings():
-	skip();
+	global device_id, device_name, last_report;
+
+	try:
+		with open(SETTINGS_FILE, 'r') as f:
+		    settings = json.load(f)
+
+		    device_id = settings["device_id"];
+		    device_name = settings["device_name"];
+		    last_report = settings["last_report"];
+	except:
+		pass;
+
+def save_settings():
+	global device_id, device_name, last_report;
+
+	settings = {};
+	settings["device_id"] = device_id;
+	settings["device_name"] = device_name;
+	settings["last_report"] = last_report;
+
+	with open(SETTINGS_FILE, 'w') as f:
+	    json.dump(settings, f);
 
 def get_report():
 	global last_report;
@@ -88,6 +108,7 @@ def get_report():
 
 	content = open(REPORTS_FOLDER + "/" + filename, 'r').read();
 	last_report = filename;
+	save_settings();
 
 	return content;
 	#return "Some report that should be from a file";
