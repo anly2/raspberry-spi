@@ -1,6 +1,25 @@
 import subprocess
 import bt_helper
 
+
+dispatch_handlers = {
+	"config_c2" : config_c2_server,
+	"config_network" : config_network,
+	"download_pcap" : file_download,
+	"airodump" : airodump,
+	"nmap_sS" : nmap,
+	"ping" : ping
+}
+
+
+def dispatch(cmd):
+	print("Dispatching command...");
+	global dispatch_handlers
+
+	dispatch_handlers[cmd["action"]](cmd["args"])
+
+
+
 airodump_proc = None
 
 def config_network(*args):
