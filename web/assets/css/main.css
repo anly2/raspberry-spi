@@ -24,17 +24,22 @@ body {
 }
 
 
-.header .action-bar {
+.action-bar {
 	background-color: rgba(200,200,200, 0.5);
+}
+
+.action-bar {
 	padding: 0.25em 0.5em;
+	margin: 0.5em 0em 1.5em;
 
 	/* clearfix */
 	width:auto;
 	overflow: auto;
 }
-.header .action-bar .breadcrumbs {
+.action-bar .breadcrumbs {
 	float: left;
 }
+
 .header .action-bar .user-menu {
 	float: right;
 }
@@ -70,13 +75,15 @@ body {
 .device-list .device {
 	padding: 0.5em 1em;
 	border-radius: 0.75em;
-	background-color: rgba(51, 122, 183, 0.2);
 }
 
-.device-list .device:hover{
-	background-color: rgba(51, 122, 183, 0.5);
-	cursor: pointer;
+.device-list.colored .device {
+	background-color: rgba(51, 122, 183, 0.2);
 }
+.device-list.colored .device:hover {
+	background-color: rgba(51, 122, 183, 0.5);
+}
+
 
 .device-list .device .device-info {
 	/*clearfix*/
@@ -97,12 +104,50 @@ body {
 	margin-left: 2em;
 }
 
+/*.device-list*/
 .device-name {
 	margin-bottom: 0.25em;
 }
+
+
+.info-list {
+	padding: 0;
+	margin: 0px;
+}
+.info-list > * > :first-child {
+	display: inline-block;
+	min-width: 5em;
+	margin-right: 0.5em;
+}
+.info-list.right-aligned-labels > * > :first-child {
+	text-align: right;
+}
+
+.info-list .device-report {
+	margin-top: 0.75em;
+}
+.info-list .device-report select {
+	margin: 0.25em 0em;
+}
+
+
+.info-list .device-report .report .report-date {
+	margin-left: 0.75em;
+}
+.info-list .device-report .report .report-content {
+	margin-top: 0.5em;
+}
+
+
+
+
 .title {
 	font-size: 1.2em;
 	font-weight: bold;
+}
+
+ul.unstyled {
+	list-style: none;
 }
 
 

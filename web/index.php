@@ -1,35 +1,56 @@
 <?php
 
-$commands = array(
-	array("slug" => "tcpdump", "label" => "TCP Dump", "cmd" => "tcpdump --args"),
-	array("slug" => "start_ssh", "label" => "Accept SSH connections", "cmd" => "sshstart --args"),
-	array("slug" => "log_avail_networks", "label" => "Log available networks", "cmd" => "dump_networks.sh --interval 15"),
-);
+require "db.php";
+require "rest.php";
 
-function sticky_pi($name) {
-	static $id = 0;
-	static $ip = 41;
-	global $commands;
-
-	return array(
-		"id" => $id++,
-		"ip" => "1.1.1." . $ip++,
-		"name" => $name,
-		"uptime" => rand(),
-		"last_heard" => time() - rand(60*1000, 3*24*60*60*1000),
-		"commands" => $commands,
-		"reports" => array("read" => array("2", "a"), "unread" => array("lorem"))
-	);
+function page($page) {
+	require("pages/header.php");
+	require("pages/" . $page);
+	require("pages/footer.php");
 }
 
-$model = array(
-	"devices" => array(
-		sticky_pi("Sticky at Highfield"),
-		sticky_pi("Sticky at Sainsbury"),
-		sticky_pi("Sticky at Home")
-	),
-);
+$path = explode("/", $_SERVER["SCRIPT_NAME"]);
+array_pop($path);
+define('HOME', join("/", $path), 1);
+define('ASSETS_FOLDER', HOME.'/assets', 1);
 
 
-include "home.php";
+function redirect($url) {
+	echo '<script type="text/javascript">window.location.href="'.$url.'";</script>';
+}
+
+function map($uri, $page) {
+	REST::handle($uri, function($r) use($page) {
+		page($page);
+	});	
+}
+
+
+//MAPPINGS
+
+
+REST::handle("/device/(\d+)/report", function($r) {
+	require("pages/report.php");
+}, "POST");
+
+REST::handle("/devices?/register", function($r) {
+	require("pages/device.php");
+}, "POST");
+
+
+map("/devices", "devices.php");
+map("/device/not-found", "device not found.php");
+map("/device/(\d+)", "device.php");
+
+REST::handle("/report/(\d+)/%", function($r) {
+	require("pages/report.php");
+});
+map("/report/(\d+)", "report.php");
+
+
+map("/form", "form.php");
+
+//DEFAULT PAGE
+
+redirect(HOME."/devices");
 ?>
