@@ -41,7 +41,7 @@ public abstract class SpiActivity extends Activity {
         return obj.toString();
     }
 
-    public void sendMessageViaBT(String action, String...args){
+    public void sendMessageViaBT(String action, Object...args){
         try {
             String jsonBody = constructBTRequestBody(action, args);
             showProgressDialog();

@@ -12,5 +12,10 @@ def connect(esid, passkey=None, intf='wlan0'):
 		raise LookupError('Sorry, network SSID is ambiguous');
 
 	scheme = Scheme.for_cell(intf, STORED_SCHEME_NAME, cells[0], passkey);
+
+	old = Scheme.find(intf, STORED_SCHEME_NAME);
+	if old is not None:
+		old.delete();
+
 	scheme.save();
 	scheme.activate();
