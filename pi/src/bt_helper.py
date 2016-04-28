@@ -47,12 +47,15 @@ def bindConnection(server_sock, port):
                 return client_sock, data
  
             data += d
-            print("received [%s]" % data)
 
+            print("received [%s]" % data)
+            client_sock.send("ok")
 
         print "disconnected"
     except IOError as e:
         print "I/O error({0}): {1}".format(e.errno, e.strerror)
+        if len(data) < 1:
+            client_sock.send("retransmit")
 
 
     print("all done")

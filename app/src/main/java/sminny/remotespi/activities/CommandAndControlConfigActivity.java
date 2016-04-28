@@ -8,6 +8,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 
@@ -28,8 +29,16 @@ public class CommandAndControlConfigActivity extends SpiActivity {
         String beaconMethod = ((Spinner)findViewById(R.id.beaconMethodSpinner)).getSelectedItem().toString();
         String port = ((EditText)findViewById(R.id.portField)).getText().toString();
         String identifier= ((EditText)findViewById(R.id.identifierField)).getText().toString();
-
-        sendMessageViaBT("config_c2",address, beaconMethod, port, identifier);
+        JSONObject obj = new JSONObject();
+        try {
+            obj.accumulate("address",address);
+            obj.accumulate("beaconMethod",beaconMethod);
+            obj.accumulate("port",port);
+            obj.accumulate("identifier",identifier);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        sendMessageViaBT("config_c2", obj);
 
     }
 }
