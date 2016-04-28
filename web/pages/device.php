@@ -16,6 +16,22 @@ if (REST::$ARGS[1] == "register") {
 }
 
 
+if ($_SERVER["REQUEST_METHOD"] == "PUT") {
+	$name = file_get_contents("php://input");
+	$addr = $_SERVER['REMOTE_ADDR'];
+
+	$id = REST::$ARGS[1];
+
+	global $db;
+	$q = $db->prepare("UPDATE devices SET Name=:name, Address=:addr WHERE ID=:id");
+	$r = $q->execute(array(":id"=>$id, ":name"=>$name, ":addr" => $addr));
+
+	// var_dump($q->errorInfo());
+	echo (!$r || $q->rowCount() == 0) ? "failure" : "success";
+	exit;
+}
+
+
 $device = fetch("SELECT * FROM devices WHERE ID=:id",
 				array(":id" => REST::$ARGS[1]));
 
