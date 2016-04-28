@@ -20,12 +20,19 @@ device_name = "Unnamed Spi";
 last_report = None;
 commands_queue = Queue();
 
-def __main__():
+def main():
+	print "loading settings..."
 	load_settings();
-	start_new_thread( loop_bt, ());
+	print "starting BT thread..."
+	
+	# start_new_thread( loop_bt, ());
+	print "starting Reporter thread..."
 	start_new_thread( loop_reporter, ());
-	start_new_thread( loop_executer, ());
-	start_new_thread( loop_cnc, ());
+	# print "starting Executor thread..."
+	# start_new_thread( loop_executer, ());
+	# print "starting C2 thread..."
+	# start_new_thread( loop_cnc, ());
+	loop_bt()
 
 
 
@@ -129,14 +136,19 @@ def get_report():
 
 #thread bt
 def loop_bt():
+	print "Starting bluetooth server socket"
 	server_socket, port = establishBTSocket()
 
 	while(True):
 		client_sock, request = bindConnection(server_socket, port)
-		bt_helper.CLIENT_SOCK = bt_sock
+		CLIENT_SOCK = client_sock
 
 		# dispatch(request)
-		cmd = json.loads(request)
+		try:
+			cmd = json.loads(request)
+		except ValueError:
+			print "Invalid JSON received, skipping response, try again"
+			continue
 		commands_queue.put(cmd);
 
 #thread cnc
@@ -165,3 +177,6 @@ def loop_executer():
 		cmd = commands_queue.get();
 		dispatch(cmd);
 		commands_queue.task_done();
+
+if __name__ == '__main__':
+	main()

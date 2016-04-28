@@ -3,15 +3,6 @@ import bt_helper
 import os
 from spi import add_report;
 
-dispatch_handlers = {
-	"config_c2" : config_c2_server,
-	"config_network" : config_network,
-	"download_pcap" : file_download,
-	"airodump" : airodump,
-	"nmap_sS" : nmap,
-	"ping" : ping
-}
-
 
 def dispatch(cmd):
 	print("Dispatching command...");
@@ -88,3 +79,13 @@ def file_download(*args):
 	client_sock.close()
 
 	os.remove(f.name)
+
+dispatch_handlers = {
+	"config_c2" : config_c2_server,
+	"config_network" : config_network,
+	"download_pcap" : file_download,
+	"airodump" : airodump,
+	"stop_airodump" : stop_airodump,
+	"nmap_sS" : nmap,
+	"ping" : ping
+}
