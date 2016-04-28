@@ -28,11 +28,16 @@ function map($uri, $page) {
 
 //MAPPINGS
 
+
 REST::handle("/device/(\d+)/report", function($r) {
 	require("pages/report.php");
 }, "POST");
 
-map("/form", "form.php");
+REST::handle("/devices?/register", function($r) {
+	require("pages/device.php");
+}, "POST");
+
+
 map("/devices", "devices.php");
 map("/device/not-found", "device not found.php");
 map("/device/(\d+)", "device.php");
@@ -42,6 +47,8 @@ REST::handle("/report/(\d+)/%", function($r) {
 });
 map("/report/(\d+)", "report.php");
 
+
+map("/form", "form.php");
 
 //DEFAULT PAGE
 

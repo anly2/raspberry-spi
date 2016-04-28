@@ -10,7 +10,7 @@ if (REST::$ARGS[0] == "device" && REST::$ARGS[2] == "report") {
 	}
 
 	$did = $devices[0]["ID"];
-	$content = file_get_contents("php://input", true);
+	$content = file_get_contents("php://input");
 
 	global $db;
 	$q = $db->prepare("INSERT INTO reports (DID, Content) VALUES (:did, :content)");

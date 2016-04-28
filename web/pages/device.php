@@ -1,7 +1,23 @@
 <?php
-$device = fetch("SELECT * FROM devices"
-					." WHERE ID=:id",
-					array(":id" => REST::$ARGS[1]));
+if (REST::$ARGS[1] == "register") {
+	$name = file_get_contents("php://input");
+	$addr = $_SERVER['REMOTE_ADDR'];
+
+	$id = fetch("SELECT MAX(ID)+1 as id FROM devices")[0]["id"];
+
+	global $db;
+	$q = $db->prepare("INSERT INTO devices (ID, Name, Address) VALUES (:id, :name, :addr)");
+	if (!$q->execute(array(":id"=>$id, ":name"=>$name, ":addr" => $addr)))
+		echo "-1";//, var_dump($q->errorInfo());
+	else
+		echo $id;
+
+	exit;
+}
+
+
+$device = fetch("SELECT * FROM devices WHERE ID=:id",
+				array(":id" => REST::$ARGS[1]));
 
 if (!isset($device[0])) {
 	redirect(HOME."/device/not-found");
