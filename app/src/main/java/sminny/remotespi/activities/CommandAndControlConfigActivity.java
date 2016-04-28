@@ -15,7 +15,6 @@ import sminny.remotespi.R;
 import sminny.remotespi.activities.utility.BluetoothHelper;
 
 public class CommandAndControlConfigActivity extends SpiActivity {
-    private BluetoothHelper bh;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,16 +29,7 @@ public class CommandAndControlConfigActivity extends SpiActivity {
         String port = ((EditText)findViewById(R.id.portField)).getText().toString();
         String identifier= ((EditText)findViewById(R.id.identifierField)).getText().toString();
 
-        try {
-            String json = constructBTRequestBody("config_c2", address, beaconMethod, port, identifier);
-            showProgressDialog();
-            bh.write(json);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
-            e.printStackTrace();
-        }
+        sendMessageViaBT("config_c2",address, beaconMethod, port, identifier);
 
     }
 }

@@ -2,17 +2,23 @@ package sminny.remotespi.activities;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.os.Looper;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.IOException;
+
+import sminny.remotespi.activities.utility.BluetoothHelper;
 
 /**
  * Created by sminny on 4/27/16.
  */
 public abstract class SpiActivity extends Activity {
     protected ProgressDialog progressDialog;
+    protected BluetoothHelper bh;
+
     public void showProgressDialog(){
         progressDialog = ProgressDialog.show(this, "Sending request","Loading...",true,false);
     }
@@ -33,5 +39,18 @@ public abstract class SpiActivity extends Activity {
         obj.accumulate("args",arr);
 
         return obj.toString();
+    }
+
+    public void sendMessageViaBT(String action, String...args){
+        try {
+            String jsonBody = constructBTRequestBody(action, args);
+            showProgressDialog();
+            bh.write(jsonBody);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+            e.printStackTrace();
+        }
     }
 }

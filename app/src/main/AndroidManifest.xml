@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="sminny.remotespi" >
+
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -22,6 +24,12 @@
         <activity android:name=".activities.CommandAndControlConfigActivity" >
         </activity>
         <activity android:name=".activities.CommandExecutionActivity" >
+        </activity>
+        <activity android:name=".activities.AircrackActivity" >
+        </activity>
+        <activity android:name=".activities.NmapActivity" >
+        </activity>
+        <activity android:name=".activities.PingActivity" >
         </activity>
     </application>
 

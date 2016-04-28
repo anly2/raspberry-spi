@@ -13,6 +13,7 @@
         android:background="#afafaf"
         android:entries="@array/command_array"
         android:id="@+id/listView"
+
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />
 </RelativeLayout>
