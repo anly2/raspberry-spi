@@ -1,11 +1,11 @@
-from time import sleep;
+from time import sleep, time;
 from thread import start_new_thread;
 from Queue import Queue;
 import os;
 import urllib2;
 import json;
 from bt_helper import *
-from commands import dispatch;
+
 
 SERVER_ADDRESS = "192.168.0.7/Sticky%20Pi/web";
 REPORTS_FOLDER = "reports/";
@@ -13,7 +13,7 @@ SETTINGS_FILE = "settings.json";
 
 REPORTS_TO_KEEP = 4;
 REPORT_SEND_INTERVAL = 10 * 60;
-COMMAND_QUERY_INTERVAL = 1 * 60;
+COMMAND_QUERY_INTERVAL = 1 * 5;
 
 device_id = None;
 device_name = "Unnamed Spi";
@@ -25,13 +25,12 @@ def main():
 	load_settings();
 	print "starting BT thread..."
 	
-	# start_new_thread( loop_bt, ());
 	print "starting Reporter thread..."
 	start_new_thread( loop_reporter, ());
-	# print "starting Executor thread..."
-	# start_new_thread( loop_executer, ());
-	# print "starting C2 thread..."
-	# start_new_thread( loop_cnc, ());
+	print "starting Executor thread..."
+	start_new_thread( loop_executer, ());
+	print "starting C2 thread..."
+	start_new_thread( loop_cnc, ());
 	loop_bt()
 
 
@@ -66,7 +65,7 @@ def send_report(report=None):
 	return request("http://"+SERVER_ADDRESS+"/device/"+str(device_id)+"/report", data=report, method="POST");
 
 def receive_commands():
-	skip();
+	pass
 	#not implemented yet
 
 
@@ -96,7 +95,7 @@ def save_settings():
 
 
 def add_report(content):
-	with open(REPORTS_FOLDER + "report-" + str(int(time.time())) + ".txt") as f:
+	with open(REPORTS_FOLDER + "report-" + str(int(time())) + ".txt", "w") as f:
 		f.write(content);
 		f.close();
 
@@ -169,12 +168,14 @@ def loop_reporter():
 
 #thread exc
 def loop_executer():
-	while True:
-		if commands_queue.empty():
-			sleep(COMMAND_QUERY_INTERVAL);
-			continue;
+	from commands import dispatch
 
-		cmd = commands_queue.get();
+	while True:
+		# if commands_queue.empty():
+			# sleep(COMMAND_QUERY_INTERVAL);
+			# continue;
+
+		cmd = commands_queue.get(True);
 		dispatch(cmd);
 		commands_queue.task_done();
 

@@ -15,7 +15,6 @@
             <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_toLeftOf="@id/portLayout"
                 android:id="@+id/addressLayout"
                 android:orientation="horizontal">
                 <TextView

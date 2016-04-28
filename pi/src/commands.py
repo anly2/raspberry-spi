@@ -15,13 +15,17 @@ def dispatch(cmd):
 airodump_proc = None
 
 def config_network(*args):
-	skip
+	pass
 
 def config_c2_server(*args):
-	skip
+	pass
 
 def ping(*args):
+	print "Starting ping procedure"
+	args = args[0]
 	if len(args) <  2:
+		print "less than 2 args"
+		print args
 		return
 	cmd = ["ping"]
 	if args[1] != "":
@@ -31,6 +35,7 @@ def ping(*args):
 	cmd.append(args[0]) 
 
 	ping_response = subprocess.Popen(cmd, stdout=subprocess.PIPE).stdout.read()
+	print "ping finished, adding report"
 	add_report(ping_response)
 	print ping_response
 	#GENERATE REPORT
