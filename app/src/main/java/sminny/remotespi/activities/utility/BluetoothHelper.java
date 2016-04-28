@@ -3,14 +3,14 @@ package sminny.remotespi.activities.utility;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
-import android.content.Context;
+import android.media.MediaScannerConnection;
 import android.os.AsyncTask;
+import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -56,9 +56,9 @@ public class BluetoothHelper {
             e.printStackTrace();
         }
     }
-    public synchronized void fetchFile(){
+    public synchronized void fetchFile(String s){
         BluetoothDownloadFileTask bdft = new BluetoothDownloadFileTask();
-        bdft.execute();
+        bdft.execute(s);
     }
     public synchronized void write(String s) throws IOException {
         if(isCommunicating)
@@ -82,33 +82,29 @@ public class BluetoothHelper {
                 return;
             }
             else {
-                Toast.makeText(activity, "Successfully sent command to device", Toast.LENGTH_LONG).show();
+                Toast.makeText(activity, "Successfully saved file", Toast.LENGTH_LONG).show();
             }
-            String s = "";
-            for(int i = 0; i<32;i++){
-                s += result[i];
-            }
-            System.out.println("HEADER IS: " + s);
+            saveFile(result);
             activity.hideProgressDialog();
         }
 
         @Override
         protected byte[] doInBackground(String... params) {
+            String s = "";
             try {
                 updateSocketAndStreams();
                 bluetoothSocket.connect();
                 if(bluetoothSocket.isConnected()) {
-                    for(String s : params){
-                        oStream.write(s.getBytes());
+                    for(String str : params){
+                        oStream.write(str.getBytes());
                         oStream.flush();
                     }
                     byte nul = 0x00;
                     oStream.write(nul);
                     oStream.flush();
-                    String s = "";
-                    byte[] buf = new byte[1024];
-                    while(iStream.read(buf) != -1)
-                        s += buf;
+                    int b;
+                    while((b = iStream.read()) != -1)
+                        s += (char)b;
 
                     oStream.close();
                     iStream.close();
@@ -117,19 +113,32 @@ public class BluetoothHelper {
                 }
             } catch (IOException e) {
                 e.printStackTrace();
+                return s.getBytes();
             }
 
             return null;
         }
 
         private void saveFile(byte[] arr){
-            File f = new File("whatever");
+
+            File f = new File(Environment.getExternalStoragePublicDirectory(
+                    Environment.DIRECTORY_DOWNLOADS),"RSpi");
+            if (!f.mkdirs()) {
+                Log.e("ERR", "Directory not created");
+            }
             try {
-                FileOutputStream fw =  new FileOutputStream(f);
+//                f.setReadable(true, false);
+                File tmp = new File(f, "dump"+System.currentTimeMillis());
+                FileOutputStream fw =  new FileOutputStream(tmp);
                 fw.write(arr);
+                fw.flush();
+                fw.close();
+
+                MediaScannerConnection.scanFile(activity, new String[]{ f.toString()}, null, null);
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            Toast.makeText(activity, f.getAbsolutePath(), Toast.LENGTH_LONG).show();
         }
     }
     private class BluetoothConnectionTask extends AsyncTask<String,Void, String>{
@@ -155,10 +164,6 @@ public class BluetoothHelper {
                         oStream.write(s.getBytes());
                         oStream.flush();
                     }
-//                    byte nul = 0x00;
-//                    oStream.write(nul);
-//                    oStream.flush();
-
                     oStream.close();
                     iStream.close();
                     bluetoothSocket.close();

@@ -13,46 +13,23 @@
             android:layout_height="wrap_content"
             android:id="@+id/locationLayout">
             <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:minWidth="75dp"
-                android:layout_alignParentRight="true"
-                android:id="@+id/portLayout"
-                android:orientation="vertical">
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="#ffffff"
-                    android:layout_marginBottom="5dp"
-                    android:textSize="25sp"
-                    android:text="Interface:"/>
-                <EditText
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="20sp"
-                    android:inputType="number"
-                    android:id="@+id/portField"
-                    android:background="#aaaaaa"/>
-
-            </LinearLayout>
-            <LinearLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_toLeftOf="@id/portLayout"
-                android:layout_marginRight="20dp"
                 android:id="@+id/addressLayout"
-                android:orientation="vertical">
+                android:orientation="horizontal">
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="5dp"
                     android:textColor="#ffffff"
                     android:textSize="25sp"
-                    android:text="ESSID:"/>
+                    android:layout_marginRight="10dp"
+                    android:text="Channels(opt):"/>
                 <EditText
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/addressField"
+                    android:id="@+id/channelsField"
                     android:inputType="text"
                     android:textSize="20sp"
                     android:background="#aaaaaa"/>
@@ -72,7 +49,7 @@
                 android:id="@+id/bssidText"
                 android:textColor="#ffffff"
                 android:textSize="25sp"
-                android:text="BSSID:"/>
+                android:text="BSSID(opt):"/>
             <EditText
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
@@ -90,7 +67,7 @@
             android:layout_marginTop="10dp"
             android:gravity="center"
             android:layout_centerInParent="true"
-            android:onClick="executeC2Configuration"
+            android:onClick="executeAirodumpCommand"
             android:text="@string/airdump_cmd"/>
 
 

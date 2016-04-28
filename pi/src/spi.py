@@ -4,6 +4,8 @@ from Queue import Queue;
 import os;
 import urllib2;
 import json;
+from bt_helper import *
+from commands import *
 
 SERVER_ADDRESS = "192.168.0.7/Sticky%20Pi/web";
 REPORTS_FOLDER = "reports/";
@@ -17,6 +19,14 @@ device_id = None;
 device_name = "Unnamed Spi";
 last_report = None;
 commands_queue = Queue();
+dispatch_handlers = {
+	"config_c2" : config_c2_server,
+	"config_network" : config_network,
+	"download_pcap" : file_download,
+	"airodump" : airodump,
+	"nmap_sS" : nmap,
+	"ping" : ping
+}
 
 def __main__():
 	load_settings();
@@ -60,8 +70,15 @@ def receive_commands():
 	skip();
 	#not implemented yet
 
-def dispatch(cmd):
+def dispatch(cmd, bt_sock = None):
 	print("Dispatching command...");
+	global dispatch_handlers
+
+	json_cmd = json.loads(cmd)
+
+	bt_helper.CLIENT_SOCK = bt_sock
+	
+	dispatch_handlers[json_cmd["action"]](json_cmd["args"])
 
 
 def load_settings():
@@ -124,7 +141,11 @@ def get_report():
 
 #thread bt
 def loop_bt():
-	skip();
+	server_socket, port = establishBTSocket()
+
+	while(True):
+		client_sock, request = bindConnection(server_socket, port)
+		dispatch(request, bt_sock = client_sock)
 #	while bind conn
 
 #thread cnc
