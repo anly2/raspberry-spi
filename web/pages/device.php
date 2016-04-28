@@ -64,7 +64,6 @@ $reports = fetch("SELECT RID as id, Timestamp FROM reports"
 						<pre class="report-content" id="shown_report_content"></pre>
 					</div>
 				</span>
-				<script type="text/javascript">setTimeout('show_report(document.getElementById("report_selection").value)', 10);</script>
 			</li>
 		</dl>
 	</div>
@@ -98,27 +97,26 @@ $reports = fetch("SELECT RID as id, Timestamp FROM reports"
 	var report_date = document.getElementById("shown_report_date");
 	var report_content = document.getElementById("shown_report_content");
 
-	var update = function() {
-		if (report_content.innerHTML.trim() != "")
-			report.style.display = "block";
-		else
-			report.style.display = "none";
-	};
-
 	window.show_report = function(id) {
+		if (id < 0) {
+			report.style.display = "none";
+			return;
+		}
+
+		call("<?php echo HOME.'/report/'; ?>" + id + "/exists", function(content) {
+			report.style.display = (content == "true")? "block" : "none";
+		});
+
 		call("<?php echo HOME.'/report/'; ?>" + id + "/date",
 			function(content){
 				var date = Date.from_mysql(content);
 				report_date.innerHTML = date.toLocaleString() + " &nbsp; (" + date.inWords() + " ago)";
-				update();
 			}
 		);
-		call("<?php echo HOME.'/report/'; ?>" + id + "/content",
-			function(content){
-				report_content.innerHTML = content;
-				update();
-			}
-		);
+		call("<?php echo HOME.'/report/'; ?>" + id + "/content", function(content){
+			report_content.innerHTML = content;
+		});
 	}
+	show_report(document.getElementById("report_selection").value);
 }())
 </script>

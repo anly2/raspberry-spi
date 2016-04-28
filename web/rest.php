@@ -26,7 +26,7 @@ class REST {
 		}
 
 		if (preg_match($pattern, $_REQUEST["_url"], $matches))
-			if ($action($matches) === false)
+			if ($action($matches) !== false)
 				exit;
 	}
 }

@@ -26,6 +26,8 @@ function map($uri, $page) {
 }
 
 
+//MAPPINGS
+
 REST::handle("/device/(\d+)/report", function($r) {
 	require("pages/report.php");
 }, "POST");
@@ -39,4 +41,9 @@ REST::handle("/report/(\d+)/%", function($r) {
 	require("pages/report.php");
 });
 map("/report/(\d+)", "report.php");
+
+
+//DEFAULT PAGE
+
+redirect(HOME."/devices");
 ?>

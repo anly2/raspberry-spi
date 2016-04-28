@@ -15,7 +15,7 @@ if (REST::$ARGS[0] == "device" && REST::$ARGS[2] == "report") {
 	global $db;
 	$q = $db->prepare("INSERT INTO reports (DID, Content) VALUES (:did, :content)");
 	if (!$q->execute(array(":did"=>$did, ":content"=>$content)))
-		echo "fail"; //$q->errorInfo();
+		echo "failure"; //$q->errorInfo();
 	else
 		echo "success";
 }
@@ -29,8 +29,12 @@ if (isset(REST::$ARGS[2])) {
 			array(":id" => REST::$ARGS[1]));
 
 		if (isset($reports[0]))
-			echo $reports[0][$field];
+			return $reports[0][$field];
 	};
+
+	if ($query == "exists") {
+		echo ($select("RID") == REST::$ARGS[1])? "true" : "false";
+	}
 
 	if ($query == "date")
 		echo $select("Timestamp");
