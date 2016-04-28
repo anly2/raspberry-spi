@@ -91,6 +91,9 @@ $reports = fetch("SELECT RID as id, Timestamp FROM reports"
 						<?php endforeach; ?>
 					</select>
 
+					<button onclick="show_report(--document.getElementById('report_selection').selectedIndex);">&uarr;</button>
+					<button onclick="show_report(++document.getElementById('report_selection').selectedIndex);">&darr;</button>
+
 					<div class="report" id="shown_report">
 						<div>Report date: <span class="report-date" id="shown_report_date"></span></div>
 						<pre class="report-content" id="shown_report_content"></pre>
