@@ -87,15 +87,12 @@ def get_report():
 	global last_report;
 
 	reports = os.listdir(REPORTS_FOLDER);
-	reports.sort(key=lambda x: os.path.getmtime(REPORTS_FOLDER+"/"+x), reverse=True);
+	reports.sort(key=lambda x: os.path.getctime(REPORTS_FOLDER + x), reverse=True);
 
 	if not reports:
 		return None;
 
-	if last_report is None:
-		last_report = reports[-1];
-
-	filename = reports[0];
+	filename = reports[-1];
 	try:
 		i = reports.index(last_report);
 
@@ -106,12 +103,11 @@ def get_report():
 	except:
 		pass;
 
-	content = open(REPORTS_FOLDER + "/" + filename, 'r').read();
+	content = open(REPORTS_FOLDER + filename, 'r').read();
 	last_report = filename;
 	save_settings();
 
 	return content;
-	#return "Some report that should be from a file";
 
 
 
