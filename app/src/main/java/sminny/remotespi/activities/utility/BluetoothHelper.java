@@ -1,22 +1,16 @@
 package sminny.remotespi.activities.utility;
 
-import android.Manifest;
-import android.app.DownloadManager;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
-import android.content.Context;
-import android.content.pm.PackageManager;
 import android.media.MediaScannerConnection;
 import android.os.AsyncTask;
 import android.os.Environment;
-import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.widget.Toast;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -38,12 +32,6 @@ public class BluetoothHelper {
     private UUID uuid;
     private SpiActivity activity;
     private boolean isCommunicating = false;
-
-    private static final int REQUEST_EXTERNAL_STORAGE = 1;
-    private static String[] PERMISSIONS_STORAGE = {
-            Manifest.permission.READ_EXTERNAL_STORAGE,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-    };
 
     public BluetoothHelper(SpiActivity activity){
         this.activity = activity;
@@ -68,9 +56,9 @@ public class BluetoothHelper {
             e.printStackTrace();
         }
     }
-    public synchronized void fetchFile(){
+    public synchronized void fetchFile(String s){
         BluetoothDownloadFileTask bdft = new BluetoothDownloadFileTask();
-        bdft.execute();
+        bdft.execute(s);
     }
     public synchronized void write(String s) throws IOException {
         if(isCommunicating)
@@ -133,17 +121,6 @@ public class BluetoothHelper {
 
         private void saveFile(byte[] arr){
 
-//            int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
-//
-//            if (permission != PackageManager.PERMISSION_GRANTED) {
-//
-//                // We don't have permission so prompt the user
-//                ActivityCompat.requestPermissions(
-//                        activity,
-//                        PERMISSIONS_STORAGE,
-//                        REQUEST_EXTERNAL_STORAGE
-//                );
-//            }
             File f = new File(Environment.getExternalStoragePublicDirectory(
                     Environment.DIRECTORY_DOWNLOADS),"RSpi");
             if (!f.mkdirs()) {

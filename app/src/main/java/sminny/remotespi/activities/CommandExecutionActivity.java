@@ -9,6 +9,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
 
+import org.json.JSONException;
+
 import sminny.remotespi.R;
 import sminny.remotespi.activities.utility.BluetoothHelper;
 
@@ -42,7 +44,11 @@ public class CommandExecutionActivity extends SpiActivity{
                         break;
                     case "Download pcap file":
                         Log.d("FETCHING: ", "fetching");
-                        bh.fetchFile();
+                        try {
+                            bh.fetchFile(constructBTRequestBody("download_pcap"));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                         break;
 
                 }
