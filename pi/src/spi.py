@@ -9,6 +9,7 @@ SERVER_ADDRESS = "192.168.0.7/Sticky%20Pi/web";
 REPORTS_FOLDER = "reports/";
 SETTINGS_FILE = "settings.json";
 
+REPORTS_TO_KEEP = 4;
 REPORT_SEND_INTERVAL = 10 * 60;
 COMMAND_QUERY_INTERVAL = 1 * 60;
 
@@ -106,6 +107,12 @@ def get_report():
 	content = open(REPORTS_FOLDER + filename, 'r').read();
 	last_report = filename;
 	save_settings();
+
+	i = REPORTS_TO_KEEP - 1;
+	l = len(reports);
+	while i < l:
+		os.remove(REPORTS_FOLDER + reports[i]);
+		i += 1;
 
 	return content;
 
