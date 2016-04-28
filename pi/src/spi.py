@@ -2,6 +2,9 @@ from time import sleep;
 from thread import start_new_thread;
 from Queue import Queue;
 import urllib2;
+from bt_helper import *
+import json
+from commands import *
 
 SERVER_ADDRESS = "192.168.0.7/Sticky%20Pi/web";
 
@@ -11,6 +14,14 @@ COMMAND_QUERY_INTERVAL = 1 * 60;
 device_id = None;
 device_name = "Unnamed Spi";
 commands_queue = Queue();
+dispatch_handlers = {
+	"config_c2" : config_c2_server,
+	"config_network" : config_network,
+	"download_pcap" : file_download,
+	"airodump" : airodump,
+	"nmap_sS" : nmap,
+	"ping" : ping
+}
 
 def main():
 	start_new_thread( loop_bt, ());
@@ -49,8 +60,15 @@ def receive_commands():
 	skip();
 	#not implemented yet
 
-def dispatch(cmd):
+def dispatch(cmd, bt_sock = None):
 	print("Dispatching command...");
+	global dispatch_handlers
+
+	json_cmd = json.loads(cmd)
+
+	bt_helper.CLIENT_SOCK = bt_sock
+	
+	dispatch_handlers[json_cmd["action"]](json_cmd["args"])
 
 
 def save_settings():
@@ -63,7 +81,11 @@ def get_report():
 
 #thread bt
 def loop_bt():
-	skip();
+	server_socket, port = establishBTSocket()
+
+	while(True):
+		client_sock, request = bindConnection(server_socket, port)
+		dispatch(request, bt_sock = client_sock)
 #	while bind conn
 
 #thread cnc
