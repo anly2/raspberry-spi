@@ -1,6 +1,7 @@
 import subprocess
 import bt_helper
 import os
+from spi import add_report;
 
 dispatch_handlers = {
 	"config_c2" : config_c2_server,
@@ -39,6 +40,7 @@ def ping(*args):
 	cmd.append(args[0]) 
 
 	ping_response = subprocess.Popen(cmd, stdout=subprocess.PIPE).stdout.read()
+	add_report(ping_response)
 	print ping_response
 	#GENERATE REPORT
 
@@ -53,6 +55,7 @@ def nmap(*args):
 	cmd.append(address)
 
 	nmap_response = stubprocess.Popen(cmd, stdout=subprocess.PIPE).stdout.read()
+	add_report(ping_response)
 	print nmap_response
 
 def airodump(*args):
