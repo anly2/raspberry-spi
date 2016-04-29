@@ -158,11 +158,9 @@ def loop_bt():
 		# dispatch(request)
 		cmd = ""
 		try:
-			print request
 			cmd = json.loads(request)
 		except ValueError:
 			print "Invalid JSON received, skipping response, try again"
-			print cmd
 			continue
 		commands_queue.put(cmd);
 
