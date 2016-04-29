@@ -4,6 +4,7 @@ if (REST::$ARGS[1] == "register") {
 	$addr = $_SERVER['REMOTE_ADDR'];
 
 	$id = fetch("SELECT MAX(ID)+1 as id FROM devices")[0]["id"];
+	if (!$id) $id = 1;
 
 	global $db;
 	$q = $db->prepare("INSERT INTO devices (ID, Name, Address) VALUES (:id, :name, :addr)");

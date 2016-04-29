@@ -37,6 +37,10 @@ REST::handle("/devices?/register", function($r) {
 	require("pages/device.php");
 }, "POST");
 
+REST::handle("/device/(\d+)", function($r) {
+	require("pages/device.php");
+}, "PUT");
+
 
 map("/devices", "devices.php");
 map("/device/not-found", "device not found.php");
