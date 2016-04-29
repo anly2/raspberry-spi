@@ -45,14 +45,13 @@ public class CommandExecutionActivity extends SpiActivity{
                     case "Download pcap file":
                         Log.d("FETCHING: ", "fetching");
                         try {
-                            bh.fetchFile(constructBTRequestBody("download_pcap"));
+                            showProgressDialog();
+                            bh.fetchFile(constructBTRequestBody("download_pcap","",""));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
                         break;
-
                 }
-
             }
         });
     }

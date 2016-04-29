@@ -12,4 +12,5 @@
     <string name="connect_bluetooth_device">Please connect to a bluetooth device first</string>
     <string name="ic_refresh">&#xf021;</string>
     <string name="airdump_cmd">Start airodump</string>
+    <string name="stop_airdump_cmd">Stop Airodump</string>
 </resources>

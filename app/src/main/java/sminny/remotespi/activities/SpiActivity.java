@@ -18,17 +18,21 @@ import sminny.remotespi.activities.utility.BluetoothHelper;
 public abstract class SpiActivity extends Activity {
     protected ProgressDialog progressDialog;
     protected BluetoothHelper bh;
+    private String loadingProgress = "Loading...";
 
     public void showProgressDialog(){
-        progressDialog = ProgressDialog.show(this, "Sending request","Loading...",true,false);
+        progressDialog = ProgressDialog.show(this, "Sending request", loadingProgress, true, false);
     }
 
     public void hideProgressDialog(){
         if(progressDialog != null) {
+            loadingProgress = "Loading...";
             progressDialog.dismiss();
         }
     }
-
+    public void updateLoadingProgress(String value){
+        loadingProgress = value;
+    }
     public String constructBTRequestBody(String action, Object...args) throws JSONException {
         JSONObject obj = new JSONObject();
         obj.accumulate("action",action);
