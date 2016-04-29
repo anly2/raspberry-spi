@@ -1,4 +1,5 @@
 import subprocess
+import wifi_helper;
 import bt_helper
 import os
 import spi;
@@ -15,7 +16,10 @@ def dispatch(cmd):
 airodump_proc = None
 
 def config_network(*args):
-	pass
+	args = args[0];
+	esid = args[0];
+	password = args[1];
+	wifi_helper.connect(esid, password);
 
 def config_c2_server(*args):
 	args = args[0][0];
