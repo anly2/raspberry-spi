@@ -13,7 +13,7 @@ SETTINGS_FILE = "settings.json";
 
 REPORTS_TO_KEEP = 4;
 REPORT_SEND_INTERVAL = 10 * 60;
-COMMAND_QUERY_INTERVAL = 1 * 5;
+COMMAND_QUERY_INTERVAL = 1 * 60;
 CLIENT_SOCKET = None
 
 device_id = None;
@@ -67,9 +67,16 @@ def rename(name):
 	return request("http://"+SERVER_ADDRESS+"/device/"+str(device_id), data=device_name, method="PUT");
 
 def send_report(report=None):
+	global device_id;
+
 	if report is None:
 		report = get_report();
 
+	if not report:
+		print "Nothing to report";
+		return;
+
+	print "Sending a report from device-"+str(device_id);
 	return request("http://"+SERVER_ADDRESS+"/device/"+str(device_id)+"/report", data=report, method="POST");
 
 def receive_commands():
@@ -148,7 +155,6 @@ def loop_bt():
 	global CLIENT_SOCKET
 	print "Starting bluetooth server socket"
 
-	global CLIENT_SOCK;
 	server_socket, port = establishBTSocket()
 
 	while(True):
@@ -183,12 +189,10 @@ def loop_cnc():
 def loop_reporter():
 	print "Starting Reporter thread..."
 
-	global device_id, REPORT_SEND_INTERVAL;
-	#get_device_id();
+	global REPORT_SEND_INTERVAL;
 
 	while True:
 		send_report();
-		print "Sent a report from device-"+str(device_id);
 		sleep(REPORT_SEND_INTERVAL);
 
 #thread exc
@@ -196,11 +200,8 @@ def loop_executer():
 	from commands import dispatch
 	print "Starting Executor thread..."
 
+	global CLIENT_SOCKET
 	while True:
-		global CLIENT_SOCKET
-		# if commands_queue.empty():
-			# sleep(COMMAND_QUERY_INTERVAL);
-			# continue;
 		cmd = commands_queue.get(True);
 		dispatch(CLIENT_SOCKET, cmd);
 		commands_queue.task_done();
