@@ -13,7 +13,8 @@ SETTINGS_FILE = "settings.json";
 
 REPORTS_TO_KEEP = 4;
 REPORT_SEND_INTERVAL = 10 * 60;
-COMMAND_QUERY_INTERVAL = 1 * 5;
+COMMAND_QUERY_INTERVAL = 1 * 60;
+CLIENT_SOCKET = None
 
 device_id = None;
 device_name = "Unnamed Spi";
@@ -21,15 +22,11 @@ last_report = None;
 commands_queue = Queue();
 
 def main():
-	print "loading settings..."
 	load_settings();
-	print "starting BT thread..."
-	
-	print "starting Reporter thread..."
+	get_device_id();
+
 	start_new_thread( loop_reporter, ());
-	print "starting Executor thread..."
 	start_new_thread( loop_executer, ());
-	print "starting C2 thread..."
 	start_new_thread( loop_cnc, ());
 	loop_bt()
 
@@ -43,34 +40,52 @@ def request(url, data=None, method="GET"):
 
 
 def get_device_id():
-	global device_id;
+	global device_id, COMMAND_QUERY_INTERVAL;
+	load_settings();
 
 	while device_id is None:
-		result = int(register());
+		try:
+			result = int(register());
 
-		if result < 0:
-			sleep(COMMAND_QUERY_INTERVAL);
-		else:
-			device_id = result;
-			save_settings();
-			return device_id;
+			if result < 0:
+				sleep(COMMAND_QUERY_INTERVAL);
+			else:
+				device_id = result;
+				save_settings();
+				return device_id;
+		except:
+			pass
+
+	return device_id;
 
 def register():
-	return request("http://"+SERVER_ADDRESS+"/device/register", data=device_name, method="POST");
+	return request("http://"+SERVER_ADDRESS+"/device/register", data=device_name, method="POST")
+
+def rename(name):
+	global device_id, device_name;
+	device_name = name;
+	return request("http://"+SERVER_ADDRESS+"/device/"+str(device_id), data=device_name, method="PUT");
 
 def send_report(report=None):
+	global device_id;
+
 	if report is None:
 		report = get_report();
 
+	if not report:
+		print "Nothing to report";
+		return;
+
+	print "Sending a report from device-"+str(device_id);
 	return request("http://"+SERVER_ADDRESS+"/device/"+str(device_id)+"/report", data=report, method="POST");
 
 def receive_commands():
-	pass
+	return [];
 	#not implemented yet
 
 
 def load_settings():
-	global device_id, device_name, last_report;
+	global device_id, device_name, last_report, SERVER_ADDRESS;
 
 	try:
 		with open(SETTINGS_FILE, 'r') as f:
@@ -79,16 +94,18 @@ def load_settings():
 		    device_id = settings["device_id"];
 		    device_name = settings["device_name"];
 		    last_report = settings["last_report"];
+		    SERVER_ADDRESS = settings["server_hostname"];
 	except:
 		pass;
 
 def save_settings():
-	global device_id, device_name, last_report;
+	global device_id, device_name, last_report, SERVER_ADDRESS;
 
 	settings = {};
 	settings["device_id"] = device_id;
 	settings["device_name"] = device_name;
 	settings["last_report"] = last_report;
+	settings["server_hostname"] = SERVER_ADDRESS;
 
 	with open(SETTINGS_FILE, 'w') as f:
 	    json.dump(settings, f);
@@ -135,14 +152,17 @@ def get_report():
 
 #thread bt
 def loop_bt():
+	global CLIENT_SOCKET
 	print "Starting bluetooth server socket"
+
 	server_socket, port = establishBTSocket()
 
 	while(True):
 		client_sock, request = bindConnection(server_socket, port)
-		CLIENT_SOCK = client_sock
+		CLIENT_SOCKET = client_sock
 
 		# dispatch(request)
+		cmd = ""
 		try:
 			cmd = json.loads(request)
 		except ValueError:
@@ -152,7 +172,11 @@ def loop_bt():
 
 #thread cnc
 def loop_cnc():
-	get_device_id();
+	print "starting CNC thread..."
+
+	global commands_queue, COMMAND_QUERY_INTERVAL;
+	#get_device_id();
+
 	while True:
 		cmds = receive_commands();
 		for cmd in cmds:
@@ -161,7 +185,10 @@ def loop_cnc():
 
 #thread reporter
 def loop_reporter():
-	get_device_id();
+	print "Starting Reporter thread..."
+
+	global REPORT_SEND_INTERVAL;
+
 	while True:
 		send_report();
 		sleep(REPORT_SEND_INTERVAL);
@@ -169,15 +196,15 @@ def loop_reporter():
 #thread exc
 def loop_executer():
 	from commands import dispatch
+	print "Starting Executor thread..."
 
+	global CLIENT_SOCKET
 	while True:
-		# if commands_queue.empty():
-			# sleep(COMMAND_QUERY_INTERVAL);
-			# continue;
-
 		cmd = commands_queue.get(True);
-		dispatch(cmd);
+		dispatch(CLIENT_SOCKET, cmd);
 		commands_queue.task_done();
+		print "Task completed"
 
+#main
 if __name__ == '__main__':
 	main()

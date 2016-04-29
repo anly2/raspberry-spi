@@ -78,7 +78,7 @@
                 android:layout_marginTop="10dp"
                 android:gravity="center"
                 android:onClick="stopAirodumpCommand"
-                android:text="@string/airdump_cmd"/>
+                android:text="@string/stop_airdump_cmd"/>
         </LinearLayout>
 
 

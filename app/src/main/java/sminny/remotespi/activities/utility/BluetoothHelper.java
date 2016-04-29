@@ -76,21 +76,25 @@ public class BluetoothHelper {
         protected void onPostExecute(byte[] result){
 
             isCommunicating = false;
-            if(result == null) {
+            activity.hideProgressDialog();
+            Log.d("TAGGGG",String.valueOf(result.length));
+            if(result.length < 3) {
                 Toast.makeText(activity, "Device Bluetooth connection not found," +
                         " please check it and try again later", Toast.LENGTH_LONG).show();
                 return;
-            }
-            else {
+            }else if(result.length == 3) {
+                Toast.makeText(activity, "No file present on device", Toast.LENGTH_LONG).show();
+                return;
+            }else {
                 Toast.makeText(activity, "Successfully saved file", Toast.LENGTH_LONG).show();
             }
             saveFile(result);
-            activity.hideProgressDialog();
         }
 
         @Override
         protected byte[] doInBackground(String... params) {
             String s = "";
+            long c = 0l;
             try {
                 updateSocketAndStreams();
                 bluetoothSocket.connect();
@@ -103,8 +107,14 @@ public class BluetoothHelper {
                     oStream.write(nul);
                     oStream.flush();
                     int b;
-                    while((b = iStream.read()) != -1)
-                        s += (char)b;
+                    String loaded = "Loaded ";
+                    String bytes = " bytes";
+                    Thread.sleep(2000);
+                    while((b = iStream.read()) != -1) {
+                        activity.updateLoadingProgress(loaded + c + bytes);
+                        s += (char) b;
+                        c++;
+                    }
 
                     oStream.close();
                     iStream.close();
@@ -113,7 +123,13 @@ public class BluetoothHelper {
                 }
             } catch (IOException e) {
                 e.printStackTrace();
+                if(c == 1) {
+                    //file does not exist
+                    return new byte[]{0x00};
+                }
                 return s.getBytes();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
 
             return null;
@@ -164,12 +180,35 @@ public class BluetoothHelper {
                         oStream.write(s.getBytes());
                         oStream.flush();
                     }
+                    String input = "";
+                    int i = 0;
+                    while(iStream.available() < 4 && i < 10){
+                        Log.d("STREAM","reading from stream");
+                        Thread.sleep(300);
+                        i++;
+                    }
+                    Log.d("OOUT","out");
+                    if(i != 10){
+                        int ch = 0;
+                        while((ch = iStream.read()) != -1){
+                            input += (char)ch;
+                        }
+                        if(input.equals("retransmit")) {
+                            oStream.close();
+                            iStream.close();
+                            bluetoothSocket.close();
+                            Log.d("RETRANSMIT","....");
+                            return doInBackground(params);
+                        }
+                    }
                     oStream.close();
                     iStream.close();
                     bluetoothSocket.close();
                     return "success";
                 }
             } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             return null;
