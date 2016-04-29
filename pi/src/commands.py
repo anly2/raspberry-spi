@@ -56,6 +56,7 @@ def ping(*args):
 
 
 def nmap(*args):
+	args = args[0]
 	if len(args)<1:
 		return
 	cmd = ["nmap", "-sS"]
@@ -63,8 +64,9 @@ def nmap(*args):
 	if args[1] !="":
 		address += "/"+args[1]
 	cmd.append(address)
-
-	nmap_response = stubprocess.Popen(cmd, stdout=subprocess.PIPE).stdout.read()
+	
+	print cmd
+	nmap_response = subprocess.Popen(cmd, stdout=subprocess.PIPE).stdout.read()
 	spi.add_report(ping_response)
 	print nmap_response
 

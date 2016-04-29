@@ -31,31 +31,27 @@ def establishBTSocket():
 
 
 def bindConnection(server_sock, port):
-    print("Waiting for connection on RFCOMM channel %d" % port)
-    
     client_sock, client_info = server_sock.accept()
-    #client_sock.settimeout(1.0)
+    client_sock.settimeout(1.0)
     print("Accepted connection from ", client_info)
     data = ""
     try:
         while True:
             d = client_sock.recv(1024)
-            print "D is"
-            print d
             if len(d) == 1:
-                print "stateful BT connection"
                 return client_sock, data
  
             data += d
+
             print("received [%s]" % data)
+            client_sock.send("ok")
 
-
-        print "disconnected"
     except IOError as e:
         print "I/O error({0}): {1}".format(e.errno, e.strerror)
+        if len(data) < 1:
+            client_sock.send("retransmit")
 
 
-    print("all done")
     return None, data
 
 if __name__ == '__main__':

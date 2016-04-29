@@ -164,12 +164,34 @@ public class BluetoothHelper {
                         oStream.write(s.getBytes());
                         oStream.flush();
                     }
+                    String input = "";
+                    int i = 0;
+                    while(iStream.available() < 4 && i < 10){
+                        Log.d("STREAM","reading from stream");
+                        Thread.sleep(300);
+                        i++;
+                    }
+                    Log.d("OOUT","out");
+                    if(i != 10){
+                        int ch = 0;
+                        while((ch = iStream.read()) != -1){
+                            input += (char)ch;
+                        }
+                        if(input.equals("retransmit")) {
+                            oStream.close();
+                            iStream.close();
+                            bluetoothSocket.close();
+                            return doInBackground(params);
+                        }
+                    }
                     oStream.close();
                     iStream.close();
                     bluetoothSocket.close();
                     return "success";
                 }
             } catch (IOException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
             return null;
