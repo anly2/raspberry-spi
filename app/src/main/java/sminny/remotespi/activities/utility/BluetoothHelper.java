@@ -197,6 +197,7 @@ public class BluetoothHelper {
                             oStream.close();
                             iStream.close();
                             bluetoothSocket.close();
+                            Log.d("RETRANSMIT","....");
                             return doInBackground(params);
                         }
                     }

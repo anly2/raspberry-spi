@@ -1,4 +1,5 @@
 from bluetooth import *
+from time import sleep
 
 CLIENT_SOCKET = None
 

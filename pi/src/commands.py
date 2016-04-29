@@ -107,8 +107,9 @@ def file_download(client_sock, *args):
 	if os.path.isfile(PCAP_FILE):
 		print "opening file to read"
 		with open(PCAP_FILE,"rb") as f:
-		    fileContent = f.read()
-		client_sock.sendall(fileContent)
+		    fileContent = f.readall()
+		print len(fileContent)
+		client_sock.send(fileContent)
 		client_sock.close()
 		print "Removing file"
 		os.remove(f.name)
