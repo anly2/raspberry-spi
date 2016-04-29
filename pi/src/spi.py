@@ -14,6 +14,7 @@ SETTINGS_FILE = "settings.json";
 REPORTS_TO_KEEP = 4;
 REPORT_SEND_INTERVAL = 10 * 60;
 COMMAND_QUERY_INTERVAL = 1 * 5;
+CLIENT_SOCKET = None
 
 device_id = None;
 device_name = "Unnamed Spi";
@@ -135,18 +136,22 @@ def get_report():
 
 #thread bt
 def loop_bt():
+	global CLIENT_SOCKET
 	print "Starting bluetooth server socket"
 	server_socket, port = establishBTSocket()
 
 	while(True):
 		client_sock, request = bindConnection(server_socket, port)
-		CLIENT_SOCK = client_sock
+		CLIENT_SOCKET = client_sock
 
 		# dispatch(request)
+		cmd = ""
 		try:
+			print request
 			cmd = json.loads(request)
 		except ValueError:
 			print "Invalid JSON received, skipping response, try again"
+			print cmd
 			continue
 		commands_queue.put(cmd);
 
@@ -171,13 +176,15 @@ def loop_executer():
 	from commands import dispatch
 
 	while True:
+		global CLIENT_SOCKET
 		# if commands_queue.empty():
 			# sleep(COMMAND_QUERY_INTERVAL);
 			# continue;
-
+		print "getting stuff"
 		cmd = commands_queue.get(True);
-		dispatch(cmd);
+		dispatch(CLIENT_SOCKET, cmd);
 		commands_queue.task_done();
 
 if __name__ == '__main__':
 	main()
+{"action":"download_pcap","args":[]}

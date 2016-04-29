@@ -39,6 +39,7 @@ def bindConnection(server_sock, port):
         while True:
             d = client_sock.recv(1024)
             if len(d) == 1:
+                print "received special SIG"
                 return client_sock, data
  
             data += d

@@ -1,16 +1,13 @@
 package sminny.remotespi.activities;
 
-import android.app.Activity;
+import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.IOException;
 
 import sminny.remotespi.R;
 import sminny.remotespi.activities.utility.BluetoothHelper;
