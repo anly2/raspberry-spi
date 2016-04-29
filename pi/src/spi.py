@@ -22,6 +22,7 @@ commands_queue = Queue();
 
 def main():
 	load_settings();
+	get_device_id();
 
 	start_new_thread( loop_reporter, ());
 	start_new_thread( loop_executer, ());
@@ -38,20 +39,31 @@ def request(url, data=None, method="GET"):
 
 
 def get_device_id():
-	global device_id;
+	global device_id, COMMAND_QUERY_INTERVAL;
+	load_settings();
 
 	while device_id is None:
-		result = int(register());
+		try:
+			result = int(register());
 
-		if result < 0:
-			sleep(COMMAND_QUERY_INTERVAL);
-		else:
-			device_id = result;
-			save_settings();
-			return device_id;
+			if result < 0:
+				sleep(COMMAND_QUERY_INTERVAL);
+			else:
+				device_id = result;
+				save_settings();
+				return device_id;
+		except:
+			pass
+
+	return device_id;
 
 def register():
-	return request("http://"+SERVER_ADDRESS+"/device/register", data=device_name, method="POST");
+	return request("http://"+SERVER_ADDRESS+"/device/register", data=device_name, method="POST")
+
+def rename(name):
+	global device_id, device_name;
+	device_name = name;
+	return request("http://"+SERVER_ADDRESS+"/device/"+str(device_id), data=device_name, method="PUT");
 
 def send_report(report=None):
 	if report is None:
@@ -65,7 +77,7 @@ def receive_commands():
 
 
 def load_settings():
-	global device_id, device_name, last_report;
+	global device_id, device_name, last_report, SERVER_ADDRESS;
 
 	try:
 		with open(SETTINGS_FILE, 'r') as f:
@@ -74,16 +86,18 @@ def load_settings():
 		    device_id = settings["device_id"];
 		    device_name = settings["device_name"];
 		    last_report = settings["last_report"];
+		    SERVER_ADDRESS = settings["server_hostname"];
 	except:
 		pass;
 
 def save_settings():
-	global device_id, device_name, last_report;
+	global device_id, device_name, last_report, SERVER_ADDRESS;
 
 	settings = {};
 	settings["device_id"] = device_id;
 	settings["device_name"] = device_name;
 	settings["last_report"] = last_report;
+	settings["server_hostname"] = SERVER_ADDRESS;
 
 	with open(SETTINGS_FILE, 'w') as f:
 	    json.dump(settings, f);
@@ -131,6 +145,8 @@ def get_report():
 #thread bt
 def loop_bt():
 	print "Starting bluetooth server socket"
+
+	global CLIENT_SOCK;
 	server_socket, port = establishBTSocket()
 
 	while(True):
@@ -148,7 +164,10 @@ def loop_bt():
 #thread cnc
 def loop_cnc():
 	print "starting CNC thread..."
-	get_device_id();
+
+	global commands_queue, COMMAND_QUERY_INTERVAL;
+	#get_device_id();
+
 	while True:
 		cmds = receive_commands();
 		for cmd in cmds:
@@ -158,7 +177,10 @@ def loop_cnc():
 #thread reporter
 def loop_reporter():
 	print "Starting Reporter thread..."
-	get_device_id();
+
+	global device_id, REPORT_SEND_INTERVAL;
+	#get_device_id();
+
 	while True:
 		send_report();
 		print "Sent a report from device-"+str(device_id);
