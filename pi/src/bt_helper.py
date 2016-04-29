@@ -32,7 +32,7 @@ def establishBTSocket():
 
 def bindConnection(server_sock, port):
     client_sock, client_info = server_sock.accept()
-    client_sock.settimeout(1.0)
+    client_sock.settimeout(3.0)
     print("Accepted connection from ", client_info)
     data = ""
     try:
@@ -40,6 +40,7 @@ def bindConnection(server_sock, port):
             d = client_sock.recv(1024)
             if len(d) == 1:
                 print "received special SIG"
+                client_sock.settimeout(0.0)
                 return client_sock, data
  
             data += d

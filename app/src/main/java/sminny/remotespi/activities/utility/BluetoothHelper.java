@@ -111,7 +111,6 @@ public class BluetoothHelper {
                     String bytes = " bytes";
                     Thread.sleep(2000);
                     while((b = iStream.read()) != -1) {
-                        Log.d("READ",String.valueOf(b));
                         activity.updateLoadingProgress(loaded + c + bytes);
                         s += (char) b;
                         c++;
