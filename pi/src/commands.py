@@ -11,7 +11,6 @@ def dispatch(client_sock,cmd):
 	print("Dispatching command...");
 	global dispatch_handlers
 	if cmd["action"] == "download_pcap":
-		print "DOWNLOAD"
 		file_download(client_sock,cmd["args"])
 	else:
 		dispatch_handlers[cmd["action"]](cmd["args"])
@@ -60,7 +59,6 @@ def ping(*args):
 	ping_response = subprocess.Popen(cmd, stdout=subprocess.PIPE).stdout.read()
 	print "ping finished, adding report"
 	spi.add_report(ping_response)
-	print ping_response
 	#GENERATE REPORT
 
 
@@ -74,10 +72,8 @@ def nmap(*args):
 		address += "/"+args[1]
 	cmd.append(address)
 	
-	print cmd
 	nmap_response = subprocess.Popen(cmd, stdout=subprocess.PIPE).stdout.read()
 	spi.add_report(ping_response)
-	print nmap_response
 
 def airodump(*args):
 	global airodump_proc
@@ -112,7 +108,6 @@ def file_download(client_sock, *args):
 		print "opening file to read"
 		with open(PCAP_FILE,"rb") as f:
 		    fileContent = f.readall()
-		print len(fileContent)
 		client_sock.send(fileContent)
 		client_sock.close()
 		print "Removing file"
