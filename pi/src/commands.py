@@ -1,7 +1,7 @@
 import subprocess
 from bt_helper import *
 import os
-from spi import add_report;
+import spi;
 
 PCAP_FILE = "pcap-01.cap";
 
@@ -23,7 +23,21 @@ def config_network(*args):
 	pass
 
 def config_c2_server(*args):
-	pass
+	args = args[0][0];
+
+	spi.load_settings();
+
+	if not args["port"]:
+		args["port"] = "80";
+
+	if args["address"]:
+		spi.SERVER_ADDRESS = args["address"] + ":" + args["port"];
+		spi.SERVER_ADDRESS += "/Sticky Pi/web";
+		spi.save_settings();
+
+	if args["identifier"]:
+		spi.rename(args["identifier"]);
+
 
 def ping(*args):
 	print "Starting ping procedure"
@@ -41,7 +55,7 @@ def ping(*args):
 
 	ping_response = subprocess.Popen(cmd, stdout=subprocess.PIPE).stdout.read()
 	print "ping finished, adding report"
-	add_report(ping_response)
+	spi.add_report(ping_response)
 	print ping_response
 	#GENERATE REPORT
 
@@ -55,9 +69,10 @@ def nmap(*args):
 	if args[1] !="":
 		address += "/"+args[1]
 	cmd.append(address)
+	
 	print cmd
 	nmap_response = subprocess.Popen(cmd, stdout=subprocess.PIPE).stdout.read()
-	add_report(nmap_response)
+	spi.add_report(ping_response)
 	print nmap_response
 
 def airodump(*args):
