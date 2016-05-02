@@ -24,10 +24,8 @@ function map($uri, $page, $wrap=true, $method="ALL") {
 }
 
 function lnk($uri) {
-	return (strpos($uri, HOME) === false)? HOME.$uri : $uri;
-}
-function echo_lnk($uri) {
-	echo lnk($uri);
+	$uri = trim($uri, "/");
+	return (strpos($uri, HOME) === false)? HOME."/".$uri : $uri;
 }
 
 function redirect($url) {

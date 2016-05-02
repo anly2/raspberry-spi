@@ -1,7 +1,10 @@
 <?php
 
 class REST {
+	public static $URI = "";
 	public static $ARGS = array();
+	public static $REQUEST_METHOD = "GET";
+
 	private static $consumed = false;
 
 	public static function preferred($type, $other="*/*") {
@@ -43,9 +46,11 @@ class REST {
 
 	public static $named_codes = array(
 		"forbidden" => 403,
-		"success" => 200,
-		"failure" => 406,
 		"not-found" => 404,
+		"bad-method" => 405,
+		"failure" => 406,
+		"success" => 200,
+		"created" => 201,
 		"empty" => 204
 	);
 
@@ -64,10 +69,13 @@ class REST {
 }
 
 if (isset($_REQUEST['_url'])) {
-	$url = $_REQUEST['_url'];
-	if (strpos($url, "/") === 0)
-		$url = substr($url, 1);
+	$uri = $_REQUEST['_url'];
+	if (strpos($uri, "/") === 0)
+		$uri = substr($uri, 1);
 
-	REST::$ARGS = explode("/", $url);
+	$uri = trim($uri, "/");
+	REST::$URI = $uri;
+	REST::$ARGS = explode("/", $uri);
+	REST::$REQUEST_METHOD = strtoupper($_SERVER["REQUEST_METHOD"]);
 }
 ?>
