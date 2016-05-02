@@ -40,18 +40,18 @@ function redirect($url) {
 }
 
 
-function error($message, $doExit=true) {
+function error($message="failure", $doExit=true) {
 	if (REST::preferred("text/html"))
-		echo '<div class="container well alert-danger">'.$message.'</div>';
+		echo '<div class="container"><div class="alert alert-danger">'.$message.'</div></div>';
 	else
 		echo $message;
 
 	if ($doExit) exit;
 }
 
-function success($message, $doExit=true) {
+function success($message="success", $doExit=true) {
 	if (REST::preferred("text/html"))
-		echo '<div class="container well alert-success">'.$message.'</div>';
+		echo '<div class="container"><div class="alert alert-success">'.$message.'</div></div>';
 	else
 		echo $message;
 
