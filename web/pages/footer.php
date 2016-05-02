@@ -1,3 +1,7 @@
+<?php
+if (!REST::preferred("text/html"))
+	return;
+?>
 
 <div class="footer">
 	<div class="container text-center">

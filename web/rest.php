@@ -4,6 +4,13 @@ class REST {
 	public static $ARGS = array();
 	private static $consumed = false;
 
+	public static function preferred($type, $other="*/*") {
+		$a = $_SERVER["HTTP_ACCEPT"];
+		$i = stripos($a, $type);
+		$o = stripos($a, $other);
+		return ($i !== false && ($o === false || ($o > $i)));
+	}
+
 	public static function handle($uri_pattern, $action, $method="ALL") {
 		if (REST::$consumed) return;
 

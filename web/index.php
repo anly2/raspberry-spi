@@ -39,6 +39,15 @@ function redirect($url) {
 	header('Location: '.lnk($url));
 }
 
+function error($message, $doExit=true) {
+	if (REST::preferred("text/html"))
+		echo '<div class="container well alert-danger">'.$message.'</div>';
+	else
+		echo $message;
+
+	if ($doExit) exit;
+}
+
 
 /*
 echo "<pre>";

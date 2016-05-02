@@ -1,3 +1,8 @@
+<?php
+if (!REST::preferred("text/html"))
+	return;
+?>
+
 <!DOCTYPE html>
 <html>
 <head lang="en">
