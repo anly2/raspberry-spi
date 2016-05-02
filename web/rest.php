@@ -39,6 +39,28 @@ class REST {
 			if ($action($matches) !== false)
 				REST::$consumed = true;
 	}
+
+
+	public static $named_codes = array(
+		"forbidden" => 403,
+		"success" => 200,
+		"failure" => 406,
+		"not-found" => 404,
+		"empty" => 204
+	);
+
+	public static function response_code($id, $doSend=true) {
+		$i = strtolower($id);
+		if (array_key_exists($i, REST::$named_codes))
+			$code = REST::$named_codes[$i];
+		else
+			$code = $id;
+
+		if ($doSend)
+			http_response_code($code);
+
+		return $code;
+	}
 }
 
 if (isset($_REQUEST['_url'])) {
