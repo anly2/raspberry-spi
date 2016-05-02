@@ -119,7 +119,7 @@ if (REST::$URI == "devices") {
 				break;
 			case "application/json":
 				$data = json_decode(file_get_contents("php://input"));
-				$name = $date["name"];
+				$name = $data["name"];
 				break;
 			case "application/x-www-form-urlencoded":
 				$name = $_REQUEST["name"];
@@ -211,7 +211,7 @@ if (count(REST::$ARGS) == 2) {
 				return;
 			}
 
-			echo json_encode($devices);
+			echo json_encode($device);
 
 		else:
 			if (!$device):
@@ -353,6 +353,71 @@ if (count(REST::$ARGS) == 2) {
 <?php
 			endif;
 		endif;
+
+	elseif (REST::$REQUEST_METHOD == "PUT"):
+		$id = REST::$ARGS[1];
+
+		$headers = apache_request_headers();
+		if (!isset($headers["Authorization"])) {
+			REST::response_code(401);
+			return error("Unauthorized!", false);
+		}
+
+		$token = $headers["Authorization"];
+
+		$auth_info = fetch("SELECT true FROM devices WHERE ID=:id AND Auth_Token=:token",
+			array(":id" => $id, ":token" => $token));
+
+		if (!$auth_info || !isset($auth_info[0])) {
+			REST::response_code(401);
+			return error("Unauthorized!", false);
+		}
+
+
+		// UPDATE //
+
+		$raw = file_get_contents("php://input");
+		switch ($_SERVER["CONTENT_TYPE"]) {
+			case "text/plain":
+				$name = $raw;
+				break;
+			case "application/json":
+				$data = json_decode($raw);
+				$name = isset($data["name"])? $data["name"] : false;
+				break;
+			case "application/x-www-form-urlencoded":
+				parse_str($raw, $data);
+				$name = isset($data["name"])? $data["name"] : false;
+				break;
+			default:
+				REST::response_code(400);
+				return error("Content type not supprted.", false);
+		}
+
+		if ($name === false) {
+			REST::response_code(400);
+			return error("Name field is missing.", false);
+		}
+
+		$addr = $_SERVER['REMOTE_ADDR'];
+
+
+		global $db;
+		$q = $db->prepare("UPDATE devices SET Name=:name, Address=:addr WHERE ID=:id AND Auth_Token=:token");
+		$r = $q->execute(array(":id"=>$id, ":name"=>$name, ":addr" => $addr, ":token" => $token));
+
+		// var_dump($q->errorInfo());
+		if (!$r || $q->rowCount() == 0)  {
+			REST::response_code("failure");
+			return error("Failed to update device information.", false);
+		}
+		else
+			return success("Success", false);
+
+	else:
+		REST::response_code("bad-method");
+		return error("Unsupported HTTP Method", false);
+
 	endif;
 }}
 ?>
