@@ -341,17 +341,17 @@ if (count(REST::$ARGS) == 2) {
 			return;
 		}
 
-		call("<?php echo HOME.'/report/'; ?>" + id + "/exists", function(content) {
+		call("<?php echo lnk("/reports"); ?>/" + id + "/exists", function(content) {
 			report.style.display = (content == "true")? "block" : "none";
 		});
 
-		call("<?php echo HOME.'/report/'; ?>" + id + "/date",
+		call("<?php echo lnk("/reports"); ?>/" + id + "/date",
 			function(content){
 				var date = Date.from_mysql(content);
 				report_date.innerHTML = date.toLocaleString() + " &nbsp; (" + new Date(new Date() - date).inWords() + " ago)";
 			}
 		);
-		call("<?php echo HOME.'/report/'; ?>" + id + "/content", function(content){
+		call("<?php echo lnk("/reports"); ?>/" + id + "/content", function(content){
 			report_content.innerHTML = content;
 		});
 	}

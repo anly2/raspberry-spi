@@ -68,6 +68,7 @@ exit;
 // Page mappings //
 
 map("/devices", "devices.php");
+map("/reports", "reports.php");
 map("/commands", "commands.php");
 map("/registration", "registration.php");
 
