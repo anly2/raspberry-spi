@@ -13,7 +13,7 @@ if (REST::$URI == "devices") {
 
 		if (!REST::preferred("text/html") && !REST::preferred("application/json")):
 			foreach ($devices as $device)
-				echo "(".$device["id"].") ".$device["name"];
+				echo "(".$device["id"].") ".$device["name"]."\n";
 
 		elseif (!REST::preferred("text/html")):
 			foreach ($devices as &$device) {
@@ -22,77 +22,83 @@ if (REST::$URI == "devices") {
 			}
 
 			echo json_encode($devices);
+
 		else:
-?>
+		?>
 
-<div class="main">
-	<div class="container">
-		<div class="title">Registered devices:</div>
-		<ul class="device-list">
-			<?php
-			foreach($devices as &$device):
-				$report_info = fetch("SELECT Timestamp as lastheard, COUNT(Timestamp) as count"
-					." FROM reports"
-					." WHERE DID=:id"
-					." ORDER BY Timestamp DESC"
-					." LIMIT 1",
-					array(":id" => $device["id"]));
+		<div class="main">
+			<div class="container">
+				<div class="title">Registered devices:</div>
 
-				if (!isset($report_info[0]) || $report_info[0]["count"] == 0) {
-					$device["lastheard"] = "Never";
-					$device["reportcount"] = 0;
-				}
-				else {
-					$device["lastheard"] = $report_info[0]["lastheard"];
-					$device["reportcount"] = $report_info[0]["count"];
-				}
-			?>
+				<ul class="device-list">
+					<?php if (count($devices) == 0): ?>
+						No devices
+					<?php endif; ?>
 
-			<li id="device-<?php echo $device["id"]; ?>" class="device">
-				<div class="device-info">
-					<div class="device-name title">
-						<a href="<?php echo lnk("/devices/".$device["id"]); ?>"><?php echo $device["name"]; ?></a></div>
-					<div class="device-address">
-						<span class="data-label">IP</span>
-						<span class="data-value"><?php echo $device["address"]; ?></span>
-					</div>
-					<div class="device-lastheard">
-						<span class="data-label">Last heard</span>
-						<span class="data-value"><?php echo $device["lastheard"]; ?></span>
-					</div>
-					<div class="device-reports">
-						<span class="data-label">Reports</span>
-						<span class="data-value">
-							<span><b><?php echo $device["reportcount"]; ?></b> total</span>
-						</span>
-					</div>
-				</div>
-			</li>
-			<?php endforeach; ?>
-		</ul>
-	</div>
-</div>
+					<?php
+					foreach($devices as &$device):
+						$report_info = fetch("SELECT Timestamp as lastheard, COUNT(Timestamp) as count"
+							." FROM reports"
+							." WHERE DID=:id"
+							." ORDER BY Timestamp DESC"
+							." LIMIT 1",
+							array(":id" => $device["id"]));
 
-<script type="text/javascript" src="<?php echo ASSETS_FOLDER.'/js/dates.js'; ?>"></script>
-<script type="text/javascript">
-(function() {
-	var lastheard = document.querySelectorAll(".device-lastheard > .data-value");
-	var now = new Date();
-	for (var i = lastheard.length - 1; i >= 0; i--) {
-		var e = lastheard[i];
-		var v = e.innerHTML;
+						if (!isset($report_info[0]) || $report_info[0]["count"] == 0) {
+							$device["lastheard"] = "Never";
+							$device["reportcount"] = 0;
+						}
+						else {
+							$device["lastheard"] = $report_info[0]["lastheard"];
+							$device["reportcount"] = $report_info[0]["count"];
+						}
+					?>
 
-		if (v == "Never")
-			continue;
+					<li id="device-<?php echo $device["id"]; ?>" class="device">
+						<div class="device-info">
+							<div class="device-name title">
+								<a href="<?php echo lnk("/devices/".$device["id"]); ?>"><?php echo $device["name"]; ?></a></div>
+							<div class="device-address">
+								<span class="data-label">IP</span>
+								<span class="data-value"><?php echo $device["address"]; ?></span>
+							</div>
+							<div class="device-lastheard">
+								<span class="data-label">Last heard</span>
+								<span class="data-value"><?php echo $device["lastheard"]; ?></span>
+							</div>
+							<div class="device-reports">
+								<span class="data-label">Reports</span>
+								<span class="data-value">
+									<span><b><?php echo $device["reportcount"]; ?></b> total</span>
+								</span>
+							</div>
+						</div>
+					</li>
+					<?php endforeach; ?>
+				</ul>
+			</div>
+		</div>
 
-		e.setAttribute('timestamp', v);
-		var d = Date.from_mysql(v);
-		e.innerHTML = new Date(now - d).inWords() + " ago";
-	}
-}())
-</script>
+		<script type="text/javascript" src="<?php echo ASSETS_FOLDER.'/js/dates.js'; ?>"></script>
+		<script type="text/javascript">
+		(function() {
+			var lastheard = document.querySelectorAll(".device-lastheard > .data-value");
+			var now = new Date();
+			for (var i = lastheard.length - 1; i >= 0; i--) {
+				var e = lastheard[i];
+				var v = e.innerHTML;
 
-<?php
+				if (v == "Never")
+					continue;
+
+				e.setAttribute('timestamp', v);
+				var d = Date.from_mysql(v);
+				e.innerHTML = new Date(now - d).inWords() + " ago";
+			}
+		}())
+		</script>
+
+		<?php
 		endif;
 
 	elseif (REST::$REQUEST_METHOD == "POST"):
@@ -223,147 +229,147 @@ if (count(REST::$ARGS) == 2) {
 		else:
 			if (!$device):
 				REST::response_code("not-found");
-?>
+				?>
 
-<?php echo_breadcrumbs_bar(array(lnk("/devices") => "Devices", "Not found")); ?>
+				<?php echo_breadcrumbs_bar(array(lnk("/devices") => "Devices", "Not found")); ?>
 
-<div class="main">
-	<div class="container">
-		<div class="title">
-			Sorry, the device was not found!
-		</div>
-	</div>
-</div>
+				<div class="main">
+					<div class="container">
+						<div class="title">
+							Sorry, the device was not found!
+						</div>
+					</div>
+				</div>
 
-<?php
+				<?php
 				return;
 
 			else:
 				$id = $device["id"];
-?>
+			?>
 
-<?php echo_breadcrumbs_bar(array(lnk("/devices") => "Devices", "Device $id")); ?>
+			<?php echo_breadcrumbs_bar(array(lnk("/devices") => "Devices", "Device $id")); ?>
 
-<div class="main">
-	<div id="device-<?php echo $id; ?>" class="container">
-		<div class="device-name title">
-			<a href="<?php echo lnk('/devices/'.$device['id']); ?>">
-				<?php echo $device["name"]; ?>
-			</a>
-		</div>
-
-		<ul class="unstyled info-list">
-			<li class="device-id">
-				<span class="data-label">Device id:</span>
-				<span class="data-value"><b><?php echo $id; ?></b></span>
-			</li>
-
-			<li class="device-address">
-				<span class="data-label">Address:</span>
-				<span class="data-value"><?php echo $device['address']; ?></span>
-			</li>
-
-			<li class="device-lastheard">
-				<span class="data-label">Last heard:</span>
-				<span class="data-value"><?php echo $device["lastheard"]; ?></span>
-			</li>
-
-			<li class="device-reports">
-				<span class="data-label">Reports:</span>
-				<span class="data-value"><b><?php echo $device["reportcount"]; ?></b> total</span>
-			</li>
-
-			<li class="device-reports-list-link">
-				<span class="data-label"> </span>
-				<span class="data-value"><a href="<?php echo lnk("/devices/$id/reports"); ?>">List of reports</a></span>
-			</li>
-
-			<li class="device-report">
-
-				<span class="data-label">Display report:</span>
-				<span class="data-value">
-					<select id="report_selection" autocomplete="off"
-						onchange="show_report(this.value);">
-						<option value="-1">None</option>
-
-						<?php foreach(
-							fetch("SELECT RID as id FROM reports WHERE DID=:id ORDER BY Timestamp DESC", array(":id" => $id))
-							as $report):
-						?>
-							<option value="<?php echo $report["id"] ?>">Report <?php echo $report["id"] ?></option>
-						<?php endforeach; ?>
-					</select>
-
-					<button onclick="--document.getElementById('report_selection').selectedIndex; update_report();">&uarr;</button>
-					<button onclick="++document.getElementById('report_selection').selectedIndex; update_report();">&darr;</button>
-
-					<div class="report" id="shown_report">
-						<div>Report date: <span class="report-date" id="shown_report_date"></span></div>
-						<pre class="report-content" id="shown_report_content"></pre>
+			<div class="main">
+				<div id="device-<?php echo $id; ?>" class="container">
+					<div class="device-name title">
+						<a href="<?php echo lnk('/devices/'.$device['id']); ?>">
+							<?php echo $device["name"]; ?>
+						</a>
 					</div>
-				</span>
-			</li>
-		</ul>
-	</div>
-</div>
+
+					<ul class="unstyled info-list">
+						<li class="device-id">
+							<span class="data-label">Device id:</span>
+							<span class="data-value"><b><?php echo $id; ?></b></span>
+						</li>
+
+						<li class="device-address">
+							<span class="data-label">Address:</span>
+							<span class="data-value"><?php echo $device['address']; ?></span>
+						</li>
+
+						<li class="device-lastheard">
+							<span class="data-label">Last heard:</span>
+							<span class="data-value"><?php echo $device["lastheard"]; ?></span>
+						</li>
+
+						<li class="device-reports">
+							<span class="data-label">Reports:</span>
+							<span class="data-value"><b><?php echo $device["reportcount"]; ?></b> total</span>
+						</li>
+
+						<li class="device-reports-list-link">
+							<span class="data-label"> </span>
+							<span class="data-value"><a href="<?php echo lnk("/devices/$id/reports"); ?>">List of reports</a></span>
+						</li>
+
+						<li class="device-report">
+
+							<span class="data-label">Display report:</span>
+							<span class="data-value">
+								<select id="report_selection" autocomplete="off"
+									onchange="show_report(this.value);">
+									<option value="-1">None</option>
+
+									<?php foreach(
+										fetch("SELECT RID as id FROM reports WHERE DID=:id ORDER BY Timestamp DESC", array(":id" => $id))
+										as $report):
+									?>
+										<option value="<?php echo $report["id"] ?>">Report <?php echo $report["id"] ?></option>
+									<?php endforeach; ?>
+								</select>
+
+								<button onclick="--document.getElementById('report_selection').selectedIndex; update_report();">&uarr;</button>
+								<button onclick="++document.getElementById('report_selection').selectedIndex; update_report();">&darr;</button>
+
+								<div class="report" id="shown_report">
+									<div>Report date: <span class="report-date" id="shown_report_date"></span></div>
+									<pre class="report-content" id="shown_report_content"></pre>
+								</div>
+							</span>
+						</li>
+					</ul>
+				</div>
+			</div>
 
 
-<script type="text/javascript" src="<?php echo ASSETS_FOLDER.'/js/dates.js'; ?>"></script>
-<script type="text/javascript">
-(function() {
-	var lastheard = document.querySelectorAll(".device-lastheard > .data-value");
-	var now = new Date();
-	for (var i = lastheard.length - 1; i >= 0; i--) {
-		var e = lastheard[i];
-		var v = e.innerHTML;
+			<script type="text/javascript" src="<?php echo ASSETS_FOLDER.'/js/dates.js'; ?>"></script>
+			<script type="text/javascript">
+			(function() {
+				var lastheard = document.querySelectorAll(".device-lastheard > .data-value");
+				var now = new Date();
+				for (var i = lastheard.length - 1; i >= 0; i--) {
+					var e = lastheard[i];
+					var v = e.innerHTML;
 
-		if (v == "Never")
-			continue;
+					if (v == "Never")
+						continue;
 
-		e.setAttribute('timestamp', v);
-		var d = Date.from_mysql(v);
-		e.innerHTML = new Date(now - d).inWords() + " ago";
-	}
-}())
-</script>
+					e.setAttribute('timestamp', v);
+					var d = Date.from_mysql(v);
+					e.innerHTML = new Date(now - d).inWords() + " ago";
+				}
+			}())
+			</script>
 
 
-<script type="text/javascript" src="<?php echo ASSETS_FOLDER.'/js/call.js'; ?>"></script>
-<script type="text/javascript">
-(function() {
-	var report = document.getElementById("shown_report");
-	var report_date = document.getElementById("shown_report_date");
-	var report_content = document.getElementById("shown_report_content");
+			<script type="text/javascript" src="<?php echo ASSETS_FOLDER.'/js/call.js'; ?>"></script>
+			<script type="text/javascript">
+			(function() {
+				var report = document.getElementById("shown_report");
+				var report_date = document.getElementById("shown_report_date");
+				var report_content = document.getElementById("shown_report_content");
 
-	window.show_report = function(id) {
-		if (id < 0) {
-			report.style.display = "none";
-			return;
-		}
+				window.show_report = function(id) {
+					if (id < 0) {
+						report.style.display = "none";
+						return;
+					}
 
-		call("<?php echo lnk("/reports"); ?>/" + id + "/exists", function(content) {
-			report.style.display = (content == "true")? "block" : "none";
-		});
+					call("<?php echo lnk("/reports"); ?>/" + id + "/exists", function(content) {
+						report.style.display = (content == "true")? "block" : "none";
+					});
 
-		call("<?php echo lnk("/reports"); ?>/" + id + "/date",
-			function(content){
-				var date = Date.from_mysql(content);
-				report_date.innerHTML = date.toLocaleString() + " &nbsp; (" + new Date(new Date() - date).inWords() + " ago)";
-			}
-		);
-		call("<?php echo lnk("/reports"); ?>/" + id + "/content", function(content){
-			report_content.innerHTML = content;
-		});
-	}
+					call("<?php echo lnk("/reports"); ?>/" + id + "/date",
+						function(content){
+							var date = Date.from_mysql(content);
+							report_date.innerHTML = date.toLocaleString() + " &nbsp; (" + new Date(new Date() - date).inWords() + " ago)";
+						}
+					);
+					call("<?php echo lnk("/reports"); ?>/" + id + "/content", function(content){
+						report_content.innerHTML = content;
+					});
+				}
 
-	window.update_report = function() {
-		show_report(document.getElementById("report_selection").value);
-	};
-	window.update_report();
-}())
-</script>
+				window.update_report = function() {
+					show_report(document.getElementById("report_selection").value);
+				};
+				window.update_report();
+			}())
+			</script>
 
-<?php
+			<?php
 			endif;
 		endif;
 
@@ -462,60 +468,60 @@ if (count(REST::$ARGS) == 3 && REST::$ARGS[2] == "reports") {
 			echo json_encode($reports);
 
 		else:
-?>
+		?>
 
 
-<?php echo_breadcrumbs_bar(array(
-	lnk("/devices") => "Devices",
-	lnk("/devices/$device_id") => "Device $device_id",
-	"Reports"));
-?>
+		<?php echo_breadcrumbs_bar(array(
+			lnk("/devices") => "Devices",
+			lnk("/devices/$device_id") => "Device $device_id",
+			"Reports"));
+		?>
 
-<div class="main">
-	<div class="container">
-		<div class="title">
-			Reports from Device <?php echo $device_id; ?>
+		<div class="main">
+			<div class="container">
+				<div class="title">
+					Reports from Device <?php echo $device_id; ?>
+				</div>
+
+				<ul class="unstyled reports-list">
+					<?php if (count($reports) == 0): ?>
+						No reports
+					<?php endif; ?>
+
+					<?php foreach ($reports as $report): ?>
+					<li>
+						<a href="<?php echo lnk("/reports/".$report["id"]); ?>">Report <?php echo $report["id"]; ?></a>
+						<span class="report-date">
+							<span class="absolute-date"><?php echo $report["timestamp"]; ?></span>
+							<span class="relative-date"><?php echo $report["timestamp"]; ?></span>
+						</span>
+					</li>
+					<?php endforeach; ?>
+				</ul>
+			</div>
 		</div>
 
-		<ul class="unstyled reports-list">
-			<?php if (count($reports) == 0): ?>
-				No reports
-			<?php endif; ?>
 
-			<?php foreach ($reports as $report): ?>
-			<li>
-				<a href="<?php echo lnk("/reports/".$report["id"]); ?>">Report <?php echo $report["id"]; ?></a>
-				<span class="report-date">
-					<span class="absolute-date"><?php echo $report["timestamp"]; ?></span>
-					<span class="relative-date"><?php echo $report["timestamp"]; ?></span>
-				</span>
-			</li>
-			<?php endforeach; ?>
-		</ul>
-	</div>
-</div>
+		<script type="text/javascript" src="<?php echo ASSETS_FOLDER.'/js/dates.js'; ?>"></script>
+		<script type="text/javascript">
+		(function() {
+			var lastheard = document.querySelectorAll(".relative-date");
+			var now = new Date();
+			for (var i = lastheard.length - 1; i >= 0; i--) {
+				var e = lastheard[i];
+				var v = e.innerHTML;
 
+				if (v == "Never")
+					continue;
 
-<script type="text/javascript" src="<?php echo ASSETS_FOLDER.'/js/dates.js'; ?>"></script>
-<script type="text/javascript">
-(function() {
-	var lastheard = document.querySelectorAll(".relative-date");
-	var now = new Date();
-	for (var i = lastheard.length - 1; i >= 0; i--) {
-		var e = lastheard[i];
-		var v = e.innerHTML;
+				e.setAttribute('timestamp', v);
+				var d = Date.from_mysql(v);
+				e.innerHTML = new Date(now - d).inWords() + " ago";
+			}
+		}())
+		</script>
 
-		if (v == "Never")
-			continue;
-
-		e.setAttribute('timestamp', v);
-		var d = Date.from_mysql(v);
-		e.innerHTML = new Date(now - d).inWords() + " ago";
-	}
-}())
-</script>
-
-<?php
+		<?php
 		endif;
 
 	elseif (REST::$REQUEST_METHOD == "POST"):
