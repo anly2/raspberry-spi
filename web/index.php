@@ -3,11 +3,9 @@
 require "db.php";
 require "rest.php";
 
-function page($page) {
-	require("pages/header.php");
-	require("pages/" . $page);
-	require("pages/footer.php");
-}
+
+
+/* Convenience functions */
 
 $path = explode("/", $_SERVER["SCRIPT_NAME"]);
 array_pop($path);
@@ -15,46 +13,63 @@ define('HOME', join("/", $path), 1);
 define('ASSETS_FOLDER', HOME.'/assets', 1);
 
 
+function map($uri, $page, $wrap=true, $method="ALL") {
+	REST::handle($uri, function($r) use($page, $wrap) {
+		ob_start();
+		if ($wrap) require("pages/header.php");
+		require("pages/" . $page);
+		if ($wrap) require("pages/footer.php");
+		// ob_end_flush();
+	}, $method);
+}
+
+function lnk($uri) {
+	return (strpos($uri, HOME) === false)? HOME.$uri : $uri;
+}
+function echo_lnk($uri) {
+	echo lnk($uri);
+}
+
 function redirect($url) {
-	echo '<script type="text/javascript">window.location.href="'.$url.'";</script>';
+	if (headers_sent()) {
+		echo '<script type="text/javascript">window.location.href="'.lnk($url).'";</script>';
+		return;
+	}
+
+	header('Location: '.lnk($url));
 }
 
-function map($uri, $page) {
-	REST::handle($uri, function($r) use($page) {
-		page($page);
-	});	
-}
+
+/*
+echo "<pre>";
+var_dump($_SERVER);
+echo "</pre>";
+exit;
+//*/
 
 
-//MAPPINGS
+// Page mappings //
 
+map("/devices", "devices.php");
+map("/commands", "commands.php");
+map("/registration", "registration.php");
 
-REST::handle("/device/(\d+)/report", function($r) {
-	require("pages/report.php");
-}, "POST");
-
-REST::handle("/devices?/register", function($r) {
-	require("pages/device.php");
-}, "POST");
-
-REST::handle("/device/(\d+)", function($r) {
-	require("pages/device.php");
-}, "PUT");
-
-
+/*
 map("/devices", "devices.php");
 map("/device/not-found", "device not found.php");
 map("/device/(\d+)", "device.php");
+map("/registration", "registration.php");
 
 REST::handle("/report/(\d+)/%", function($r) {
 	require("pages/report.php");
 });
 map("/report/(\d+)", "report.php");
+*/
 
-
+// Test form page
 map("/form", "form.php");
 
-//DEFAULT PAGE
-
-redirect(HOME."/devices");
+// DEFAULT page
+//map("", "devices.php"); //does not change the URL, which is a nice cue to have
+REST::handle("", function($r) { redirect("/devices"); });
 ?>

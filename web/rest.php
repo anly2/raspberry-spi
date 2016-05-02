@@ -2,8 +2,11 @@
 
 class REST {
 	public static $ARGS = array();
+	private static $consumed = false;
 
 	public static function handle($uri_pattern, $action, $method="ALL") {
+		if (REST::$consumed) return;
+
 		if ($method != "ALL" && !(is_array($method) && in_array("ALL", $method))) {
 			$m = $_SERVER['REQUEST_METHOD'];
 			if (is_array($method)) {
@@ -27,7 +30,7 @@ class REST {
 
 		if (preg_match($pattern, $_REQUEST["_url"], $matches))
 			if ($action($matches) !== false)
-				exit;
+				REST::$consumed = true;
 	}
 }
 
