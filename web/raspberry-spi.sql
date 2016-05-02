@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: Apr 27, 2016 at 06:32 PM
+-- Generation Time: May 03, 2016 at 12:23 AM
 -- Server version: 10.0.17-MariaDB
 -- PHP Version: 5.6.14
 
@@ -23,11 +23,30 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `appinfo`
+--
+
+CREATE TABLE `appinfo` (
+  `Field` varchar(50) NOT NULL,
+  `Value` varchar(100) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `appinfo`
+--
+
+INSERT INTO `appinfo` (`Field`, `Value`) VALUES
+('registration_state', 'open');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `devices`
 --
 
 CREATE TABLE `devices` (
   `ID` int(11) NOT NULL COMMENT 'The Unique ID of the device',
+  `Auth_Token` char(32) NOT NULL COMMENT 'The Auth Token for the specific device',
   `Name` varchar(100) NOT NULL COMMENT 'The name of the device',
   `Address` varchar(40) DEFAULT NULL COMMENT 'The IP address of the device (v4 or v6)'
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -48,6 +67,11 @@ CREATE TABLE `reports` (
 --
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `appinfo`
+--
+ALTER TABLE `appinfo` ADD FULLTEXT KEY `Field` (`Field`);
 
 --
 -- Indexes for table `devices`
@@ -71,12 +95,12 @@ ALTER TABLE `reports`
 -- AUTO_INCREMENT for table `devices`
 --
 ALTER TABLE `devices`
-  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT COMMENT 'The Unique ID of the device', AUTO_INCREMENT=3;
+  MODIFY `ID` int(11) NOT NULL AUTO_INCREMENT COMMENT 'The Unique ID of the device', AUTO_INCREMENT=12;
 --
 -- AUTO_INCREMENT for table `reports`
 --
 ALTER TABLE `reports`
-  MODIFY `RID` int(11) NOT NULL AUTO_INCREMENT COMMENT 'The ID of the report', AUTO_INCREMENT=3;
+  MODIFY `RID` int(11) NOT NULL AUTO_INCREMENT COMMENT 'The ID of the report', AUTO_INCREMENT=13;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
