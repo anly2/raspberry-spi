@@ -273,7 +273,13 @@ if (count(REST::$ARGS) == 2) {
 				<span class="data-value"><b><?php echo $device["reportcount"]; ?></b> total</span>
 			</li>
 
+			<li class="device-reports-list-link">
+				<span class="data-label"> </span>
+				<span class="data-value"><a href="<?php echo lnk("/devices/$id/reports"); ?>">List of reports</a></span>
+			</li>
+
 			<li class="device-report">
+
 				<span class="data-label">Display report:</span>
 				<span class="data-value">
 					<select id="report_selection" autocomplete="off"
@@ -297,7 +303,7 @@ if (count(REST::$ARGS) == 2) {
 					</div>
 				</span>
 			</li>
-		</dl>
+		</ul>
 	</div>
 </div>
 
@@ -424,6 +430,87 @@ if (count(REST::$ARGS) == 2) {
 	else:
 		REST::response_code("bad-method");
 		return error("Unsupported HTTP Method", false);
+
+	endif;
+}}
+
+handle_item_reports: {
+if (count(REST::$ARGS) == 3 && REST::$ARGS[2] == "reports") {
+	if (REST::$REQUEST_METHOD == "GET"):
+		$device_id = REST::$ARGS[1];
+
+		$device_info = fetch("SELECT true FROM devices WHERE ID=:id", array(":id" => $device_id));
+		if (!isset($device_info[0])) {
+			REST::response_code("not-found");
+			return error("Device not found.", false);
+		}
+
+
+		$reports = fetch("SELECT RID as id, Timestamp as timestamp FROM reports WHERE DID=:device_id",
+			array(":device_id" => $device_id));
+
+		if (!REST::preferred("text/html") && !REST::preferred("application/json"))
+			echo join("\n", array_map(function ($r) { return $r["id"]; }, $reports));
+
+		elseif (!REST::preferred("text/html")) {
+			foreach ($reports as &$report)
+				$report["link"] = lnk("report/".$report["id"]);
+
+			echo json_encode($reports);
+		}
+
+		else {
+?>
+
+
+<?php echo_breadcrumbs_bar(array(
+	lnk("/devices") => "Devices",
+	lnk("/devices/$device_id") => "Device $device_id",
+	"Reports"));
+?>
+
+<div class="main">
+	<div class="container">
+		<div class="title">
+			Reports from Device <?php echo $device_id; ?>
+		</div>
+
+		<ul class="unstyled reports-list">
+			<?php foreach ($reports as $report): ?>
+			<li>
+				<a href="<?php echo lnk("/reports/".$report["id"]); ?>">Report <?php echo $report["id"]; ?></a>
+				<span class="report-date">
+					<span class="absolute-date"><?php echo $report["timestamp"]; ?></span>
+					<span class="relative-date"><?php echo $report["timestamp"]; ?></span>
+				</span>
+			</li>
+			<?php endforeach; ?>
+		</ul>
+	</div>
+</div>
+
+
+<script type="text/javascript" src="<?php echo ASSETS_FOLDER.'/js/dates.js'; ?>"></script>
+<script type="text/javascript">
+(function() {
+	var lastheard = document.querySelectorAll(".relative-date");
+	var now = new Date();
+	for (var i = lastheard.length - 1; i >= 0; i--) {
+		var e = lastheard[i];
+		var v = e.innerHTML;
+
+		if (v == "Never")
+			continue;
+
+		e.setAttribute('timestamp', v);
+		var d = Date.from_mysql(v);
+		e.innerHTML = new Date(now - d).inWords() + " ago";
+	}
+}())
+</script>
+
+<?php
+		}
 
 	endif;
 }}

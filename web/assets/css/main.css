@@ -140,6 +140,28 @@ body {
 
 
 
+.reports-list li {
+	margin: 0.75em 0px;
+}
+.reports-list .report-date {
+	display: block;
+}
+.reports-list .report-date:before {
+	content: 'Date: ';
+	margin-left: 2em;
+}
+.reports-list .relative-date {
+	display: block;
+}
+.reports-list .relative-date:before {
+	content: '(';
+	margin-left: 2em;
+}
+.reports-list .relative-date:after {
+	content: ')';
+}
+
+
 
 .title {
 	font-size: 1.2em;
