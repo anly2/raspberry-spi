@@ -113,20 +113,27 @@ if (REST::$URI == "devices") {
 
 		// REGISTER //
 
+		$raw = file_get_contents("php://input");
 		switch ($_SERVER["CONTENT_TYPE"]) {
 			case "text/plain":
-				$name = file_get_contents("php://input");
+				$name = $raw;
 				break;
 			case "application/json":
-				$data = json_decode(file_get_contents("php://input"));
-				$name = $data["name"];
+				$data = json_decode($raw);
+				$name = isset($data["name"])? $data["name"] : false;
 				break;
 			case "application/x-www-form-urlencoded":
-				$name = $_REQUEST["name"];
+				parse_str($raw, $data);
+				$name = isset($data["name"])? $data["name"] : false;
 				break;
 			default:
 				REST::response_code(400);
 				return error("Content type not supprted.", false);
+		}
+
+		if ($name === false) {
+			REST::response_code(400);
+			return error("Name field is missing.", false);
 		}
 
 		$addr = $_SERVER['REMOTE_ADDR'];
@@ -149,12 +156,12 @@ if (REST::$URI == "devices") {
 		header('Location: '.lnk("/devices/$id"));
 		header('Authorization: '.$token);
 
-		if (REST::preferred("application/json"))
+		if (!REST::preferred("text/html") && !REST::preferred("application/json"))
+			echo $id . " " . $token;
+		elseif (!REST::preferred("text/html"))
 			echo json_encode(array("id" => $id, "token" => $token));
 		else
-			echo $id . " " . $token;
-
-		exit;
+			echo '<script type="text/javascript">window.location.href="'.lnk("/devices/$id").'"</script>"';
 
 	else:
 		REST::response_code("bad-method");
