@@ -370,6 +370,9 @@ if (count(REST::$ARGS) == 2) {
 	elseif (REST::$REQUEST_METHOD == "PUT"):
 		$id = REST::$ARGS[1];
 
+
+		// AUTHORIZE //
+
 		$headers = apache_request_headers();
 		if (!isset($headers["Authorization"])) {
 			REST::response_code(401);
@@ -449,17 +452,16 @@ if (count(REST::$ARGS) == 3 && REST::$ARGS[2] == "reports") {
 		$reports = fetch("SELECT RID as id, Timestamp as timestamp FROM reports WHERE DID=:device_id",
 			array(":device_id" => $device_id));
 
-		if (!REST::preferred("text/html") && !REST::preferred("application/json"))
+		if (!REST::preferred("text/html") && !REST::preferred("application/json")):
 			echo join("\n", array_map(function ($r) { return $r["id"]; }, $reports));
 
-		elseif (!REST::preferred("text/html")) {
+		elseif (!REST::preferred("text/html")):
 			foreach ($reports as &$report)
 				$report["link"] = lnk("report/".$report["id"]);
 
 			echo json_encode($reports);
-		}
 
-		else {
+		else:
 ?>
 
 
@@ -476,6 +478,10 @@ if (count(REST::$ARGS) == 3 && REST::$ARGS[2] == "reports") {
 		</div>
 
 		<ul class="unstyled reports-list">
+			<?php if (count($reports) == 0): ?>
+				No reports
+			<?php endif; ?>
+
 			<?php foreach ($reports as $report): ?>
 			<li>
 				<a href="<?php echo lnk("/reports/".$report["id"]); ?>">Report <?php echo $report["id"]; ?></a>
@@ -510,7 +516,64 @@ if (count(REST::$ARGS) == 3 && REST::$ARGS[2] == "reports") {
 </script>
 
 <?php
+		endif;
+
+	elseif (REST::$REQUEST_METHOD == "POST"):
+		$device_id = REST::$ARGS[1];
+
+		$device_info = fetch("SELECT ID FROM devices WHERE ID=:id", array(":id"=>$device_id));
+		if (!isset($device_info[0])) {
+			REST::response_code("not-found");
+			return error("Device not found.", false);
 		}
+
+		// AUTHORIZE //
+
+		$headers = apache_request_headers();
+		if (!isset($headers["Authorization"])) {
+			REST::response_code(401);
+			return error("Unauthorized!", false);
+		}
+
+		$token = $headers["Authorization"];
+
+		$auth_info = fetch("SELECT true FROM devices WHERE ID=:id AND Auth_Token=:token",
+			array(":id" => $device_id, ":token" => $token));
+
+		if (!$auth_info || !isset($auth_info[0])) {
+			REST::response_code(401);
+			return error("Unauthorized!", false);
+		}
+
+
+		// POST //
+
+		$id = fetch("SELECT MAX(RID)+1 as id FROM reports")[0]["id"];
+		if (!$id) $id = 1;
+
+		$content = file_get_contents("php://input");
+
+		global $db;
+		$q = $db->prepare("INSERT INTO reports (RID, DID, Content) VALUES (:report_id, :device_id, :content)");
+		if (!$q->execute(array(":report_id"=>$id, ":device_id"=>$device_id, ":content"=>$content))) {
+			REST::response_code("failure");
+			return error("Failed to post the report.", false);
+		}
+
+
+		// REPLY / RENDER //
+
+		REST::response_code("created");
+		header('Location: '.lnk("/reports/$id"));
+
+		if (!REST::preferred("text/html"))
+			return success("Successfully posted the report.", false);
+		else
+			echo '<script type="text/javascript">window.location.href="'.lnk("/reports/$id").'"</script>"';
+
+	else:
+		REST::response_code("bad-method");
+		return error("Unsupported HTTP Method", false);
 
 	endif;
 }}
