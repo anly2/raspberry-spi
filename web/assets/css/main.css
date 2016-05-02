@@ -162,6 +162,11 @@ body {
 }
 
 
+.commands-list li {
+	margin: 0.75em 0px;
+}
+
+
 
 .title {
 	font-size: 1.2em;
