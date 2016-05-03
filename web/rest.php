@@ -8,6 +8,9 @@ class REST {
 	private static $consumed = false;
 
 	public static function preferred($type, $other="*/*") {
+		if (!isset($_SERVER["HTTP_ACCEPT"]))
+			return false;
+
 		$a = $_SERVER["HTTP_ACCEPT"];
 		$i = stripos($a, $type);
 		$o = stripos($a, $other);
