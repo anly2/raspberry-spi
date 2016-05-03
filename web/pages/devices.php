@@ -590,7 +590,7 @@ if (count(REST::$ARGS) == 3 && REST::$ARGS[2] == "reports") {
 }}
 
 handle_item_commands: {
-if (count(REST::$ARGS) == 3 && REST::$ARGS[2] = "commands") {
+if (count(REST::$ARGS) == 3 && REST::$ARGS[2] == "commands") {
 	if (REST::$REQUEST_METHOD == "GET"):
 		$device_id = REST::$ARGS[1];
 
