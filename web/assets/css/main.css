@@ -134,6 +134,9 @@ body {
 .info-list .device-report .report .report-date {
 	margin-left: 0.75em;
 }
+.info-list .device-commands {
+	margin-top: 0.5em;
+}
 .info-list .device-report .report .report-content {
 	margin-top: 0.5em;
 }

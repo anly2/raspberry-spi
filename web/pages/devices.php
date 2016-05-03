@@ -284,6 +284,11 @@ if (count(REST::$ARGS) == 2) {
 							<span class="data-value"><a href="<?php echo lnk("/devices/$id/reports"); ?>">List of reports</a></span>
 						</li>
 
+						<li class="device-commands">
+							<span class="data-label">Commands:</span>
+							<span class="data-value"><a href="<?php echo lnk("/commands")."?device=".$id; ?>"><button>Issue command</button></a></span>
+						</li>
+
 						<li class="device-report">
 
 							<span class="data-label">Display report:</span>

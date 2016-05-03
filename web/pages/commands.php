@@ -97,7 +97,17 @@ if (count(REST::$ARGS) == 2) {
 
 
 		// RENDER //
-		echo_breadcrumbs_bar(array(lnk("/commands") => "Commands", $command["name"]));
+
+		if (isset($_REQUEST["device"])) {
+			$device_id = intval($_REQUEST["device"]);
+			$device_query = "?device=".$device_id;
+		} else
+			$device_query = "";
+
+		echo_breadcrumbs_bar(
+			array(lnk("/commands").$device_query => "Commands",
+			 $command["name"]));
+
 		include $command["view"];
 
 	elseif (REST::$REQUEST_METHOD == "POST"):
@@ -163,7 +173,9 @@ if (count(REST::$ARGS) == 2) {
 			return error("Failed to issue command.", false);
 		}
 
-		success("Successfully issued command.");
+		success("Successfully issued command.", false);
+		echo '<div class="container"><div class="alert alert-info"><a href="'.lnk("/devices/".$device_id).'">Back to device info</a></div></div>';
+		exit;
 
 	else:
 		REST::response_code("bad-method");
