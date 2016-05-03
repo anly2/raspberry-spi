@@ -583,4 +583,34 @@ if (count(REST::$ARGS) == 3 && REST::$ARGS[2] == "reports") {
 
 	endif;
 }}
+
+handle_item_commands: {
+if (count(REST::$ARGS) == 3 && REST::$ARGS[2] = "commands") {
+	if (REST::$REQUEST_METHOD == "GET"):
+		$device_id = REST::$ARGS[1];
+
+		if (isset($_REQUEST["since"]))
+			$since = $_REQUEST["since"];
+		else
+			$since = false;
+
+		$args = array(":device_id"=>$device_id);
+		if ($since) $args[":since"] = $since;
+
+		$cmds = fetch("SELECT Command as command, Data as data, Timestamp as timestamp"
+				." FROM commands"
+				." WHERE DID=:device_id"
+				.($since? " AND Timestamp>:since" : "")
+				." ORDER BY Timestamp DESC", $args);
+
+		ob_clean();
+		echo json_encode($cmds);
+		exit;
+
+	else:
+		REST::response_code("bad-method");
+		return error("Unsupported HTTP Method", false);
+
+	endif;
+}}
 ?>
