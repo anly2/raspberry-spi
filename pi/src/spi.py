@@ -7,7 +7,7 @@ import json;
 from bt_helper import *
 
 
-SERVER_ADDRESS = "192.168.0.7/Sticky%20Pi/web";
+SERVER_ADDRESS = "192.168.0.7/Remote-Spi/web";
 REPORTS_FOLDER = "reports/";
 SETTINGS_FILE = "settings.json";
 
@@ -43,6 +43,7 @@ def get_device_id():
 	global device_id, COMMAND_QUERY_INTERVAL;
 	load_settings();
 
+	register_attempts = 0
 	while device_id is None:
 		try:
 			result = int(register());
@@ -54,17 +55,24 @@ def get_device_id():
 				save_settings();
 				return device_id;
 		except:
-			pass
+			if(register_attempts < 10):
+				print "Reconnection attempt #"+str(register_attempts)
+				sleep(1)
+				register_attempts += 1
+				continue
+
+			break
+			
 
 	return device_id;
 
 def register():
-	return request("http://"+SERVER_ADDRESS+"/device/register", data=device_name, method="POST")
+	return request("http://"+SERVER_ADDRESS+"/devices", data=device_name, method="POST")
 
 def rename(name):
 	global device_id, device_name;
 	device_name = name;
-	return request("http://"+SERVER_ADDRESS+"/device/"+str(device_id), data=device_name, method="PUT");
+	return request("http://"+SERVER_ADDRESS+"/devices/"+str(device_id), data=device_name, method="PUT");
 
 def send_report(report=None):
 	global device_id;
@@ -77,7 +85,7 @@ def send_report(report=None):
 		return;
 
 	print "Sending a report from device-"+str(device_id);
-	return request("http://"+SERVER_ADDRESS+"/device/"+str(device_id)+"/report", data=report, method="POST");
+	return request("http://"+SERVER_ADDRESS+"/devices/"+str(device_id)+"/reports", data=report, method="POST");
 
 def receive_commands():
 	return [];
