@@ -2,10 +2,9 @@
 global $command;
 
 if (REST::$REQUEST_METHOD == "POST") {
-	$data = json_encode(array($_REQUEST["host"], $_REQUEST["subnet"]));
+	$data = json_encode(array($_REQUEST["address"], $_REQUEST["count"], $_REQUEST["interval"], $_REQUEST["ttl"]));
 	return $data;
 }
-
 ?>
 
 <div class="main">
@@ -21,12 +20,20 @@ if (REST::$REQUEST_METHOD == "POST") {
 
 		<ul class="unstyled arguments-list">
 			<li>
-				<span class="data-label">Host:</span>
-				<span class="data-value"><input type="text" name="host" /></span>
+				<span class="data-label">Address:</span>
+				<span class="data-value"><input type="text" name="address" /></span>
 			</li>
 			<li>
-				<span class="data-label">Subnet mask:</span>
-				<span class="data-value">/<input type="number" name="subnet" placeholder="24" min="1" max="32"></span>
+				<span class="data-label">Count:</span>
+				<span class="data-value"><input type="number" name="count" min="1"></span>
+			</li>
+			<li>
+				<span class="data-label">Interval:</span>
+				<span class="data-value"><input type="number" name="interval" min="1"></span>
+			</li>
+			<li>
+				<span class="data-label">Time-to-live:</span>
+				<span class="data-value"><input type="number" name="ttl" min="1"></span>
 			</li>
 			<li>
 				<input type="submit" value="Submit" />

@@ -4,16 +4,11 @@ $commands = array(
 		"slug" => "aerodump",
 		"name"=>"aerodump-ng",
 		"view"=>"commands/aerodump.php"),
-	// bssid
-	// channel
 	array(
 		"slug" => "ping",
 		"name"=>"Ping",
 		"view"=>"commands/ping.php"),
-	// addr
-	// ttl
-	// count
-	// interval
+
 	array(
 		"slug" => "nmap",
 		"name"=>"nmap",
@@ -143,8 +138,23 @@ if (count(REST::$ARGS) == 2) {
 
 		// POST //
 
-		$cmd = $_REQUEST["command"]; //#!!! XSS
-		$data = json_encode(array($_REQUEST["host"], $_REQUEST["subnet"])); //#!!! XSS
+		$query = REST::$ARGS[1];
+		global $command;
+		$command = false;
+
+		foreach ($commands as $cmd)
+			if ($cmd["slug"] == $query) {
+				$command = $cmd;
+				break;
+			}
+
+		if (!$command) {
+			REST::response_code("not-found");
+			return error("Command not found.", false);
+		}
+
+		$cmd = $command["slug"];
+		$data = include $command["view"];
 
 		global $db;
 		$q = $db->prepare("INSERT INTO commands (DID, Command, Data) VALUES (:device_id, :cmd, :data)");
@@ -153,7 +163,7 @@ if (count(REST::$ARGS) == 2) {
 			return error("Failed to issue command.", false);
 		}
 
-		success();
+		success("Successfully issued command.");
 
 	else:
 		REST::response_code("bad-method");
