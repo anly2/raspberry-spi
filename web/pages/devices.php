@@ -602,11 +602,18 @@ if (count(REST::$ARGS) == 3 && REST::$ARGS[2] = "commands") {
 		$args = array(":device_id"=>$device_id);
 		if ($since) $args[":since"] = $since;
 
-		$cmds = fetch("SELECT Command as command, Data as data, Timestamp as timestamp"
+		$cmds = fetch("SELECT Command as action, Data as args, Timestamp as timestamp"
 				." FROM commands"
 				." WHERE DID=:device_id"
 				.($since? " AND Timestamp>:since" : "")
 				." ORDER BY Timestamp DESC", $args);
+
+		foreach ($cmds as &$cmd)
+			$cmd["args"] = json_decode($cmd["args"]);
+
+		$since_info = fetch("SELECT NOW() as timestamp");
+		if (isset($since_info[0]))
+			header("X-Since: ". $since_info[0]["timestamp"]);
 
 		ob_clean();
 		echo json_encode($cmds);
