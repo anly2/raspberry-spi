@@ -35,7 +35,7 @@ def config_c2_server(*args):
 
 	if args["address"]:
 		spi.SERVER_ADDRESS = args["address"] + ":" + args["port"];
-		spi.SERVER_ADDRESS += "/Sticky Pi/web";
+		spi.SERVER_ADDRESS += "/Remote-Spi/web";
 		spi.save_settings();
 
 	if args["identifier"]:
@@ -73,7 +73,7 @@ def nmap(*args):
 	cmd.append(address)
 	
 	nmap_response = subprocess.Popen(cmd, stdout=subprocess.PIPE).stdout.read()
-	spi.add_report(ping_response)
+	spi.add_report(nmap_response)
 
 def airodump(*args):
 	global airodump_proc
