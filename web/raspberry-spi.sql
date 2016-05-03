@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Generation Time: May 03, 2016 at 12:23 AM
+-- Generation Time: May 03, 2016 at 02:03 AM
 -- Server version: 10.0.17-MariaDB
 -- PHP Version: 5.6.14
 
@@ -37,6 +37,19 @@ CREATE TABLE `appinfo` (
 
 INSERT INTO `appinfo` (`Field`, `Value`) VALUES
 ('registration_state', 'open');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `commands`
+--
+
+CREATE TABLE `commands` (
+  `DID` int(11) NOT NULL COMMENT 'The command name',
+  `Command` varchar(100) NOT NULL COMMENT 'The device the command was issued for',
+  `Data` text NOT NULL COMMENT 'The additional date/arguments to the command',
+  `Timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT 'Timestamp of when issued'
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- --------------------------------------------------------
 

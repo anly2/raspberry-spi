@@ -167,6 +167,16 @@ body {
 }
 
 
+.arguments-list li {
+	margin: 0.5em 0px;
+}
+.arguments-list li > :first-child {
+	display: inline-block;
+	min-width: 6em;
+	margin-right: 0.5em;
+}
+
+
 
 .title {
 	font-size: 1.2em;
