@@ -13,12 +13,14 @@ SETTINGS_FILE = "settings.json";
 
 REPORTS_TO_KEEP = 4;
 REPORT_SEND_INTERVAL = 10 * 60;
-COMMAND_QUERY_INTERVAL = 1 * 60;
+COMMAND_QUERY_INTERVAL = 1 * 30;
 CLIENT_SOCKET = None
 
 device_id = None;
 device_name = "Unnamed Spi";
+auth_token = "";
 last_report = None;
+last_command_query = "SYNC";
 commands_queue = Queue();
 
 def main():
@@ -33,30 +35,35 @@ def main():
 
 
 def request(url, data=None, method="GET"):
+	global auth_token;
+
 	request = urllib2.Request(url, data=data);
+	request.add_header("Authorization", auth_token);
 	request.get_method = lambda: method;
 	response = urllib2.urlopen(request);
 	return response.read();
 
 
 def get_device_id():
-	global device_id, COMMAND_QUERY_INTERVAL;
+	global device_id, COMMAND_QUERY_INTERVAL, auth_token;
 	load_settings();
 
 	register_attempts = 0
 	while device_id is None:
 		try:
-			result = int(register());
+			result = json.loads(register());
 
 			if result < 0:
 				sleep(COMMAND_QUERY_INTERVAL);
 			else:
-				device_id = result;
+				device_id = result["id"];
+				auth_token = result["token"];
 				save_settings();
 				return device_id;
-		except:
+		except Exception as ee:
+			print ee;
 			if(register_attempts < 10):
-				print "Reconnection attempt #"+str(register_attempts)
+				print "Reconnection attempt #"+str(register_attempts+1)
 				sleep(1)
 				register_attempts += 1
 				continue
@@ -67,12 +74,24 @@ def get_device_id():
 	return device_id;
 
 def register():
-	return request("http://"+SERVER_ADDRESS+"/devices", data=device_name, method="POST")
+	request = urllib2.Request("http://"+SERVER_ADDRESS+"/devices", data=device_name);
+	request.add_header("Content-Type", "text/plain");
+	request.add_header("Accept", "application/json");
+	request.get_method = lambda: "POST";
+	response = urllib2.urlopen(request);
+	return response.read();
 
 def rename(name):
-	global device_id, device_name;
+	global device_id, device_name, auth_token;
 	device_name = name;
-	return request("http://"+SERVER_ADDRESS+"/devices/"+str(device_id), data=device_name, method="PUT");
+
+	request = urllib2.Request("http://"+SERVER_ADDRESS+"/devices/"+str(device_id), data=device_name);
+	request.add_header("Content-Type", "text/plain");
+	request.add_header("Accept", "application/json");
+	request.add_header("Authorization", auth_token);
+	request.get_method = lambda: "PUT";
+	response = urllib2.urlopen(request);
+	return response.read();
 
 def send_report(report=None):
 	global device_id;
@@ -85,15 +104,36 @@ def send_report(report=None):
 		return;
 
 	print "Sending a report from device-"+str(device_id);
-	return request("http://"+SERVER_ADDRESS+"/devices/"+str(device_id)+"/reports", data=report, method="POST");
+	request = urllib2.Request("http://"+SERVER_ADDRESS+"/devices/"+str(device_id)+"/reports", data=report);
+	request.add_header("Content-Type", "text/plain");
+	request.add_header("Accept", "application/json");
+	request.add_header("Authorization", auth_token);
+	request.get_method = lambda: "POST";
+	response = urllib2.urlopen(request);
+	return response.read();
 
 def receive_commands():
-	return [];
-	#not implemented yet
+	global last_command_query;
+	print "Querying for commands";
+
+	request = urllib2.Request("http://"+SERVER_ADDRESS+"/devices/"+str(device_id)+"/commands?since="+(last_command_query.replace(" ", "%20")));
+	request.add_header("Content-Type", "text/plain");
+	request.add_header("Accept", "application/json");
+	request.add_header("Authorization", auth_token);
+	response = urllib2.urlopen(request);
+
+	since = response.info().getheader("X-Since");
+	last_command_query = since;
+	save_settings();
+
+	result = response.read();
+	cmds = json.loads(result);
+	print "Received "+str(len(cmds))+" commands";
+	return cmds;
 
 
 def load_settings():
-	global device_id, device_name, last_report, SERVER_ADDRESS;
+	global device_id, device_name, auth_token, last_report, last_command_query, SERVER_ADDRESS;
 
 	try:
 		with open(SETTINGS_FILE, 'r') as f:
@@ -101,18 +141,22 @@ def load_settings():
 
 		    device_id = settings["device_id"];
 		    device_name = settings["device_name"];
+		    auth_token = settings["auth_token"];
 		    last_report = settings["last_report"];
+		    last_command_query = settings["last_command_query"];
 		    SERVER_ADDRESS = settings["server_hostname"];
 	except:
 		pass;
 
 def save_settings():
-	global device_id, device_name, last_report, SERVER_ADDRESS;
+	global device_id, device_name, auth_token, last_report, last_command_query, SERVER_ADDRESS;
 
 	settings = {};
 	settings["device_id"] = device_id;
 	settings["device_name"] = device_name;
+	settings["auth_token"] = auth_token;
 	settings["last_report"] = last_report;
+	settings["last_command_query"] = last_command_query;
 	settings["server_hostname"] = SERVER_ADDRESS;
 
 	with open(SETTINGS_FILE, 'w') as f:
