@@ -39,6 +39,9 @@ function redirect($url) {
 
 
 function error($message="failure", $doExit=true) {
+	if (REST::response_code() < 300)
+		REST::response_code(500);
+
 	if (REST::preferred("text/html"))
 		echo '<div class="container"><div class="alert alert-danger">'.$message.'</div></div>';
 	else
@@ -48,6 +51,9 @@ function error($message="failure", $doExit=true) {
 }
 
 function success($message="success", $doExit=true) {
+	if (REST::response_code() >= 300)
+		REST::response_code(200);
+
 	if (REST::preferred("text/html"))
 		echo '<div class="container"><div class="alert alert-success">'.$message.'</div></div>';
 	else

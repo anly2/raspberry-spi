@@ -57,7 +57,10 @@ class REST {
 		"empty" => 204
 	);
 
-	public static function response_code($id, $doSend=true) {
+	public static function response_code($id = false, $doSend=true) {
+		if (!$id)
+			return http_response_code();
+
 		$i = strtolower($id);
 		if (array_key_exists($i, REST::$named_codes))
 			$code = REST::$named_codes[$i];
