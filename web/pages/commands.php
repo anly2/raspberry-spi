@@ -70,8 +70,7 @@ if (REST::$URI == "commands") {
 		endif;
 
 	else:
-		REST::response_code("bad-method");
-		return error("Unsupported HTTP Method", false);
+		return error("bad-method", "Unsupported HTTP Method");
 
 	endif;
 }}
@@ -90,10 +89,8 @@ if (count(REST::$ARGS) == 2) {
 				break;
 			}
 
-		if (!$command) {
-			REST::response_code("not-found");
-			return error("Command not found.", false);
-		}
+		if (!$command)
+			return error("not-found", "Command not found.");
 
 
 		// RENDER //
@@ -111,12 +108,11 @@ if (count(REST::$ARGS) == 2) {
 		include $command["view"];
 
 	elseif (REST::$REQUEST_METHOD == "POST"):
-		if (!isset($_REQUEST["device_id"])) {
-			REST::response_code(400);
-			return error("Missing device id field.", false);
-		}
+		if (!isset($_REQUEST["device_id"]))
+			return error(400, "Missing device id field.");
 
 		$device_id = $_REQUEST["device_id"];
+
 
 		// AUTHORIZE //
 
@@ -140,10 +136,8 @@ if (count(REST::$ARGS) == 2) {
 				$authorized = true;
 		}
 
-		if (!$authorized) {
-			REST::response_code(401);
-			return error("Unauthorized!", false);
-		}
+		if (!$authorized)
+			return error(401, "Unauthorized!");
 
 
 		// POST //
@@ -158,28 +152,23 @@ if (count(REST::$ARGS) == 2) {
 				break;
 			}
 
-		if (!$command) {
-			REST::response_code("not-found");
-			return error("Command not found.", false);
-		}
+		if (!$command)
+			return error("not-found", "Command not found.");
 
 		$cmd = $command["slug"];
 		$data = include $command["view"];
 
 		global $db;
 		$q = $db->prepare("INSERT INTO commands (DID, Command, Data) VALUES (:device_id, :cmd, :data)");
-		if (!$q->execute(array(":device_id"=>$device_id, ":cmd"=>$cmd, ":data"=>$data))) {
-			REST::response_code("failure");
-			return error("Failed to issue command.", false);
-		}
+		if (!$q->execute(array(":device_id"=>$device_id, ":cmd"=>$cmd, ":data"=>$data)))
+			return error("failure", "Failed to issue command.");
 
-		success("Successfully issued command.", false);
+		success("Successfully issued command.");
 		echo '<div class="container"><div class="alert alert-info"><a href="'.lnk("/devices/".$device_id).'">Back to device info</a></div></div>';
 		exit;
 
 	else:
-		REST::response_code("bad-method");
-		return error("Unsupported HTTP Method", false);
+		return error("bad-method", "Unsupported HTTP Method");
 
 	endif;
 }}

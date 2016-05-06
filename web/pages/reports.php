@@ -14,10 +14,8 @@ if (count(REST::$ARGS) == 2) {
 				." WHERE RID=:id",
 				array(":id"=>$id));
 
-		if (!isset($report[0])) {
-			REST::response_code("not-found");
-			return error("Report not found.", false);
-		}
+		if (!isset($report[0]))
+			return error("not-found", "Report not found.");
 		else
 			$report = $report[0];
 
@@ -109,8 +107,7 @@ if (count(REST::$ARGS) == 2) {
 		endif;
 
 	else:
-		REST::response_code("bad-method");
-		return error("Unsupported HTTP Method", false);
+		return error("bad-method", "Unsupported HTTP Method");
 
 	endif;
 }}
@@ -145,8 +142,7 @@ if (count(REST::$ARGS) == 3) {
 		exit;
 
 	else:
-		REST::response_code("bad-method");
-		return error("Unsupported HTTP Method", false);
+		return error("bad-method", "Unsupported HTTP Method");
 
 	endif;
 }}

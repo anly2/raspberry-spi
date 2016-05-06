@@ -104,17 +104,13 @@ if (REST::$URI == "devices") {
 	elseif (REST::$REQUEST_METHOD == "POST"):
 		$registration = fetch("SELECT Value as state FROM appinfo WHERE Field='registration_state'");
 
-		if (!$registration || !isset($registration[0])) {
-			REST::response_code(500);
-			return error("Failed to check registration state.", false);
-		}
+		if (!$registration || !isset($registration[0]))
+			return error(500, "Failed to check registration state.");
 
 		$registration_state = $registration[0]["state"];
 
-		if (!$registration_state) {
-			REST::response_code(503);
-			return error("Registration is closed.", false);
-		}
+		if (!$registration_state)
+			return error(503, "Registration is closed.");
 
 
 		// REGISTER //
@@ -133,14 +129,11 @@ if (REST::$URI == "devices") {
 				$name = isset($data["name"])? $data["name"] : false;
 				break;
 			default:
-				REST::response_code(400);
-				return error("Content type not supprted.", false);
+				return error(400, "Content type not supprted.");
 		}
 
-		if ($name === false) {
-			REST::response_code(400);
-			return error("Name field is missing.", false);
-		}
+		if ($name === false)
+			return error(400, "Name field is missing.");
 
 		$addr = $_SERVER['REMOTE_ADDR'];
 		$token = auth_token();
@@ -150,10 +143,9 @@ if (REST::$URI == "devices") {
 
 		global $db;
 		$q = $db->prepare("INSERT INTO devices (ID, Name, Address, Auth_Token) VALUES (:id, :name, :addr, :token)");
-		if (!$q->execute(array(":id"=>$id, ":name"=>$name, ":addr" => $addr, ":token" => $token))) {
-			REST::response_code("failure");
-			return error(REST::preferred("text/html")? "Failed to register the device." : "-1", false);
-		}
+		if (!$q->execute(array(":id"=>$id, ":name"=>$name, ":addr" => $addr, ":token" => $token)))
+			return error("failure",
+				REST::preferred("text/html")? "Failed to register the device." : "-1");
 
 
 		// REPLY / RENDER //
@@ -170,8 +162,7 @@ if (REST::$URI == "devices") {
 			echo '<script type="text/javascript">window.location.href="'.lnk("/devices/$id").'"</script>"';
 
 	else:
-		REST::response_code("bad-method");
-		return error("Unsupported HTTP Method", false);
+		return error("bad-method", "Unsupported HTTP Method");
 
 	endif;
 }}
@@ -205,11 +196,8 @@ if (count(REST::$ARGS) == 2) {
 		// RENDER //
 
 		if (!REST::preferred("text/html") && !REST::preferred("application/json")):
-			if (!$device) {
-				REST::response_code("not-found");
-				error("Device not found.", false);
-				return;
-			}
+			if (!$device)
+				return error("not-found", "Device not found.");
 
 			echo "Device ID:\t".$device["id"]."\n";
 			echo "Name:\t".$device["name"]."\n";
@@ -385,20 +373,16 @@ if (count(REST::$ARGS) == 2) {
 		// AUTHORIZE //
 
 		$headers = apache_request_headers();
-		if (!isset($headers["Authorization"])) {
-			REST::response_code(401);
-			return error("Unauthorized!", false);
-		}
+		if (!isset($headers["Authorization"]))
+			return error(401, "Unauthorized!");
 
 		$token = $headers["Authorization"];
 
 		$auth_info = fetch("SELECT true FROM devices WHERE ID=:id AND Auth_Token=:token",
 			array(":id" => $id, ":token" => $token));
 
-		if (!$auth_info || !isset($auth_info[0])) {
-			REST::response_code(401);
-			return error("Unauthorized!", false);
-		}
+		if (!$auth_info || !isset($auth_info[0]))
+			return error(401, "Unauthorized!");
 
 
 		// UPDATE //
@@ -417,14 +401,11 @@ if (count(REST::$ARGS) == 2) {
 				$name = isset($data["name"])? $data["name"] : false;
 				break;
 			default:
-				REST::response_code(400);
-				return error("Content type not supprted.", false);
+				return error(400, "Content type not supprted.");
 		}
 
-		if ($name === false) {
-			REST::response_code(400);
-			return error("Name field is missing.", false);
-		}
+		if ($name === false)
+			return error(400, "Name field is missing.");
 
 		$addr = $_SERVER['REMOTE_ADDR'];
 
@@ -434,16 +415,13 @@ if (count(REST::$ARGS) == 2) {
 		$r = $q->execute(array(":id"=>$id, ":name"=>$name, ":addr" => $addr, ":token" => $token));
 
 		// var_dump($q->errorInfo());
-		if (!$r || $q->rowCount() == 0)  {
-			REST::response_code("failure");
-			return error("Failed to update device information.", false);
-		}
+		if (!$r || $q->rowCount() == 0)
+			return error("failure", "Failed to update device information.");
 		else
-			return success("Success", false);
+			return success("Success");
 
 	else:
-		REST::response_code("bad-method");
-		return error("Unsupported HTTP Method", false);
+		return error("bad-method", "Unsupported HTTP Method");
 
 	endif;
 }}
@@ -454,10 +432,8 @@ if (count(REST::$ARGS) == 3 && REST::$ARGS[2] == "reports") {
 		$device_id = REST::$ARGS[1];
 
 		$device_info = fetch("SELECT true FROM devices WHERE ID=:id", array(":id" => $device_id));
-		if (!isset($device_info[0])) {
-			REST::response_code("not-found");
-			return error("Device not found.", false);
-		}
+		if (!isset($device_info[0]))
+			return error("not-found", "Device not found.");
 
 
 		$reports = fetch("SELECT RID as id, Timestamp as timestamp FROM reports WHERE DID=:device_id",
@@ -533,28 +509,22 @@ if (count(REST::$ARGS) == 3 && REST::$ARGS[2] == "reports") {
 		$device_id = REST::$ARGS[1];
 
 		$device_info = fetch("SELECT ID FROM devices WHERE ID=:id", array(":id"=>$device_id));
-		if (!isset($device_info[0])) {
-			REST::response_code("not-found");
-			return error("Device not found.", false);
-		}
+		if (!isset($device_info[0]))
+			return error("not-found", "Device not found.");
 
 		// AUTHORIZE //
 
 		$headers = apache_request_headers();
-		if (!isset($headers["Authorization"])) {
-			REST::response_code(401);
-			return error("Unauthorized!", false);
-		}
+		if (!isset($headers["Authorization"]))
+			return error(401, "Unauthorized!");
 
 		$token = $headers["Authorization"];
 
 		$auth_info = fetch("SELECT true FROM devices WHERE ID=:id AND Auth_Token=:token",
 			array(":id" => $device_id, ":token" => $token));
 
-		if (!$auth_info || !isset($auth_info[0])) {
-			REST::response_code(401);
-			return error("Unauthorized!", false);
-		}
+		if (!$auth_info || !isset($auth_info[0]))
+			return error(401, "Unauthorized!");
 
 
 		// POST //
@@ -566,10 +536,8 @@ if (count(REST::$ARGS) == 3 && REST::$ARGS[2] == "reports") {
 
 		global $db;
 		$q = $db->prepare("INSERT INTO reports (RID, DID, Content) VALUES (:report_id, :device_id, :content)");
-		if (!$q->execute(array(":report_id"=>$id, ":device_id"=>$device_id, ":content"=>$content))) {
-			REST::response_code("failure");
-			return error("Failed to post the report.", false);
-		}
+		if (!$q->execute(array(":report_id"=>$id, ":device_id"=>$device_id, ":content"=>$content)))
+			return error("failure", "Failed to post the report.");
 
 
 		// REPLY / RENDER //
@@ -578,13 +546,12 @@ if (count(REST::$ARGS) == 3 && REST::$ARGS[2] == "reports") {
 		header('Location: '.lnk("/reports/$id"));
 
 		if (!REST::preferred("text/html"))
-			return success("Successfully posted the report.", false);
+			return success("Successfully posted the report.");
 		else
 			echo '<script type="text/javascript">window.location.href="'.lnk("/reports/$id").'"</script>"';
 
 	else:
-		REST::response_code("bad-method");
-		return error("Unsupported HTTP Method", false);
+		return error("bad-method", "Unsupported HTTP Method");
 
 	endif;
 }}
@@ -620,8 +587,7 @@ if (count(REST::$ARGS) == 3 && REST::$ARGS[2] == "commands") {
 		exit;
 
 	else:
-		REST::response_code("bad-method");
-		return error("Unsupported HTTP Method", false);
+		return error("bad-method", "Unsupported HTTP Method");
 
 	endif;
 }}

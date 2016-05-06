@@ -2,11 +2,8 @@
 $authorised = $_SERVER["SERVER_ADDR"] == $_SERVER["REMOTE_ADDR"];
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-	if (!$authorised) {
-		REST::response_code("forbidden");
-		error("Forbidden!", false);
-		return;
-	}
+	if (!$authorised)
+		return error("forbidden", "Forbidden!");
 
 	switch ($_SERVER["CONTENT_TYPE"]) {
 		case "application/x-www-form-urlencoded":
@@ -30,9 +27,11 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
 	// var_dump($q->errorInfo());
 	if (!$r || $q->rowCount() == 0)
-		error("Failed to ".($state? "open" : "close")." registration.", !REST::preferred("text/html"));
+		error(500, "Failed to ".($state? "open" : "close")." registration.", !REST::preferred("text/html"));
 	else
 		success("Successfully ".($state? "opened" : "closed")." registration.", !REST::preferred("text/html"));
+
+	exit;
 }
 
 
@@ -40,7 +39,7 @@ $state = fetch("SELECT Value FROM appinfo WHERE Field='registration_state' LIMIT
 if (isset($state[0]))
 	$state = (strtolower($state[0]["Value"]) == "open");
 else
-	error('Failed to fetch Registration State.');
+	return error('Failed to fetch Registration State.');
 
 ?>
 

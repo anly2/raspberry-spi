@@ -38,28 +38,28 @@ function redirect($url) {
 }
 
 
-function error($message="failure", $doExit=true) {
-	if (REST::response_code() < 300)
+function error($status=false, $message="failure") {
+	if ($status)
+		REST::response_code($status);
+	elseif (REST::response_code() < 300)
 		REST::response_code(500);
 
 	if (REST::preferred("text/html"))
 		echo '<div class="container"><div class="alert alert-danger">'.$message.'</div></div>';
 	else
 		echo $message;
-
-	if ($doExit) exit;
 }
 
-function success($message="success", $doExit=true) {
-	if (REST::response_code() >= 300)
+function success($message="success", $status=false) {
+	if ($status)
+		REST::response_code($status);
+	elseif (REST::response_code() >= 300)
 		REST::response_code(200);
 
 	if (REST::preferred("text/html"))
 		echo '<div class="container"><div class="alert alert-success">'.$message.'</div></div>';
 	else
 		echo $message;
-
-	if ($doExit) exit;
 }
 
 
