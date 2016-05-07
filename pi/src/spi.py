@@ -7,7 +7,7 @@ import json;
 from bt_helper import *
 
 
-SERVER_ADDRESS = "192.168.0.7/Remote-Spi/web";
+SERVER_ADDRESS = "IP_ADDRESS_HERE/Remote-Spi/web";
 REPORTS_FOLDER = "reports/";
 SETTINGS_FILE = "settings.json";
 
